@@ -3,22 +3,25 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy all source files and config
+# Copy configuration files
 COPY package*.json ./
 COPY tsconfig.json vite.config.ts drizzle.config.ts ./
+COPY postcss.config.js tailwind.config.ts ./
+
+# Copy source code
 COPY client ./client
 COPY server ./server
 COPY shared ./shared
 COPY migrations ./migrations
 COPY types ./types
 
-# Install all dependencies (including devDependencies for build)
-RUN npm install
+# Install dependencies (including devDependencies)
+RUN npm ci
 
-# Build the application (client + server)
+# Build the application
 RUN npm run build
 
-# Final stage - Runtime
+# Runtime stage
 FROM node:20-alpine
 
 WORKDIR /app
