@@ -5,3 +5,5 @@ server/public
 vite.config.ts.*
 *.tar.gz
 .env
+RESUME_ENHANCEMENTS.md
+IMPLEMENTATION_ROADMAP.md
