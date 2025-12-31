@@ -1,21 +1,24 @@
-# Build stage for React frontend
-FROM node:20-alpine AS client-builder
+# Build stage
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy all source files and config
 COPY package*.json ./
+COPY tsconfig.json vite.config.ts drizzle.config.ts ./
+COPY client ./client
+COPY server ./server
+COPY shared ./shared
+COPY migrations ./migrations
+COPY types ./types
 
-# Install dependencies
+# Install all dependencies (including devDependencies for build)
 RUN npm install
 
-# Copy client source
-COPY client ./client
-
-# Build React app
+# Build the application (client + server)
 RUN npm run build
 
-# Final stage - Node.js app
+# Final stage - Runtime
 FROM node:20-alpine
 
 WORKDIR /app
@@ -29,15 +32,8 @@ COPY package*.json ./
 # Install production dependencies only
 RUN npm ci --only=production
 
-# Copy server source
-COPY server ./server
-COPY shared ./shared
-COPY migrations ./migrations
-COPY types ./types
-COPY tsconfig.json drizzle.config.ts ./
-
-# Copy built React app from client-builder
-COPY --from=client-builder /app/dist ./dist
+# Copy built application from builder
+COPY --from=builder /app/dist ./dist
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
