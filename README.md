@@ -62,6 +62,8 @@ A real-time collaborative code editor enabling multiple developers to code toget
 
 ### Installation
 
+#### Option 1: Local Development (Without Docker)
+
 ```bash
 # Install dependencies
 npm install
@@ -78,6 +80,67 @@ npm run dev
 ```
 
 Server runs on `http://localhost:5000`
+
+#### Option 2: Docker (Recommended)
+
+```bash
+# Copy environment variables
+cp .env.example .env
+
+# Build and start with Docker Compose
+docker-compose up -d
+
+# View logs
+docker-compose logs -f app
+
+# Stop containers
+docker-compose down
+```
+
+The application will be available at `http://localhost:5000` and PostgreSQL at `localhost:5432`
+
+**Docker Services:**
+
+- **app**: CodeBuddy application (Node.js + React)
+- **db**: PostgreSQL 16 database
+
+**First Time Setup:**
+
+```bash
+# Enter the app container to run migrations
+docker-compose exec app npm run db:push
+
+# Or setup from scratch
+docker-compose up -d
+docker-compose exec app npm run db:push
+```
+
+### Docker Commands
+
+```bash
+# Start containers in background
+docker-compose up -d
+
+# Start with logs visible
+docker-compose up
+
+# Stop containers
+docker-compose down
+
+# View logs
+docker-compose logs -f app
+docker-compose logs -f db
+
+# Access PostgreSQL container
+docker-compose exec db psql -U codebuddy -d codebuddy
+
+# Rebuild Docker image
+docker-compose up -d --build
+
+# Remove all data and start fresh
+docker-compose down -v
+docker-compose up -d
+```
 
 ## 📝 Available Commands
 
@@ -144,3 +207,90 @@ The system tracks:
 - **Educational Platforms**: Instructor + multiple students learning together
 - **Interview Preparation**: Candidates practice with real-time feedback
 - **Open Source Collaboration**: Distributed team coordination
+
+## 🐳 Docker Deployment
+
+CodeBuddy is fully containerized for easy deployment.
+
+### Prerequisites for Docker
+
+- Docker Desktop installed
+- 2GB RAM minimum
+- 1GB free disk space
+
+### Quick Start with Docker
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/tanmayjoddar/codebuddy.git
+cd codebuddy
+
+# 2. Start with Docker Compose
+docker-compose up -d
+
+# 3. Run database migrations
+docker-compose exec app npm run db:push
+
+# 4. Access the application
+# Open http://localhost:5000 in your browser
+```
+
+### Configuration
+
+Create or update `.env` file for Docker:
+
+```env
+DB_USER=codebuddy
+DB_PASSWORD=your_secure_password
+DB_NAME=codebuddy
+NODE_ENV=development
+SESSION_SECRET=your_session_secret_here
+```
+
+### Troubleshooting Docker
+
+**Port already in use:**
+
+```bash
+# Change ports in docker-compose.yml
+# Or stop other services using ports 5000/5432
+docker-compose down
+```
+
+**Database connection errors:**
+
+```bash
+# Check database health
+docker-compose ps
+
+# View database logs
+docker-compose logs db
+
+# Restart database
+docker-compose restart db
+```
+
+**Reset everything:**
+
+```bash
+# Remove containers and volumes
+docker-compose down -v
+
+# Rebuild and start fresh
+docker-compose up -d --build
+```
+
+## 🚀 Production Deployment
+
+For production deployments:
+
+```bash
+# Build production image
+docker build -t codebuddy:latest .
+
+# Push to container registry
+docker tag codebuddy:latest your-registry/codebuddy:latest
+docker push your-registry/codebuddy:latest
+
+# Deploy on your hosting platform (AWS, Azure, Heroku, DigitalOcean, etc.)
+```
