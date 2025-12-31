@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: codebuddy-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-codebuddy}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-codebuddy_password}
+      POSTGRES_DB: ${DB_NAME:-codebuddy}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-codebuddy}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - codebuddy-network
+
+  # CodeBuddy Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: codebuddy-app
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      DATABASE_URL: postgresql://${DB_USER:-codebuddy}:${DB_PASSWORD:-codebuddy_password}@db:5432/${DB_NAME:-codebuddy}
+      SESSION_SECRET: ${SESSION_SECRET:-your-session-secret-change-this}
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/dist
+    networks:
+      - codebuddy-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  codebuddy-network:
+    driver: bridge
