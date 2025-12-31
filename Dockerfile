@@ -5,17 +5,15 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY client/package*.json ./client/
 
 # Install dependencies
 RUN npm install
-RUN npm install -C client
 
 # Copy client source
 COPY client ./client
 
 # Build React app
-RUN npm run build --workspace=client
+RUN npm run build
 
 # Final stage - Node.js app
 FROM node:20-alpine
