@@ -1,5 +1,8 @@
 # CodeBuddy
 
+[![CI/CD Pipeline](https://github.com/tanmayjoddar/codebuddy/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/tanmayjoddar/codebuddy/actions/workflows/ci-cd.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A real-time collaborative code editor enabling multiple developers to code together simultaneously with instant synchronization, live chat, and integrated code execution.
 
 ## ✨ Core Features
@@ -294,3 +297,50 @@ docker push your-registry/codebuddy:latest
 
 # Deploy on your hosting platform (AWS, Azure, Heroku, DigitalOcean, etc.)
 ```
+
+## 🔄 CI/CD Pipeline
+
+CodeBuddy uses GitHub Actions for continuous integration and deployment:
+
+### Automated Workflow
+- **On Push to Main**: Runs tests → Builds Docker image → Pushes to GitHub Container Registry
+- **On Pull Request**: Runs tests to validate code changes
+- **On Push to Develop**: Runs tests only
+
+### What the Pipeline Does
+
+1. **Testing**
+   - Runs TypeScript type checks
+   - Executes all unit tests
+   - Checks code formatting
+   - Uploads coverage reports
+
+2. **Building**
+   - Builds optimized Docker image
+   - Tags with commit SHA
+   - Pushes to `ghcr.io/tanmayjoddar/codebuddy`
+
+3. **Security**
+   - Scans dependencies for vulnerabilities
+   - Reports to GitHub Security Dashboard
+
+### Running Tests Locally
+
+```bash
+# Run all tests
+npm test
+
+# Run with coverage report
+npm test:coverage
+
+# Watch mode (re-run on file changes)
+npm test:watch
+
+# Type checking
+npm run check
+```
+
+### View Pipeline Status
+- **GitHub Actions Tab**: https://github.com/tanmayjoddar/codebuddy/actions
+- **Container Registry**: https://github.com/tanmayjoddar/codebuddy/pkgs/container/codebuddy
+- **Documentation**: See [CI_CD_PIPELINE.md](./CI_CD_PIPELINE.md)
