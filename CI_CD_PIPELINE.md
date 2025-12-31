@@ -9,6 +9,7 @@ The CI/CD pipeline runs on every push to `main` or `develop` branches and on pul
 ### Pipeline Jobs
 
 #### 1. **Test Job** (Runs First)
+
 - Spins up PostgreSQL database
 - Installs dependencies
 - Runs code formatting check
@@ -19,6 +20,7 @@ The CI/CD pipeline runs on every push to `main` or `develop` branches and on pul
 **Status:** Tests must pass before building Docker image
 
 #### 2. **Build Job** (Runs After Tests Pass)
+
 - Builds Docker image using multi-stage build
 - Logs into GitHub Container Registry
 - Tags image with branch name and commit SHA
@@ -26,12 +28,14 @@ The CI/CD pipeline runs on every push to `main` or `develop` branches and on pul
 - **Only pushes on main branch** (for production)
 
 **Docker Image Naming:**
+
 ```
 ghcr.io/tanmayjoddar/codebuddy:main
 ghcr.io/tanmayjoddar/codebuddy:main-abc123def  (commit SHA)
 ```
 
 #### 3. **Security Job** (Runs in Parallel)
+
 - Scans code with Trivy vulnerability scanner
 - Uploads results to GitHub Code Scanning
 - Helps identify security issues
@@ -40,11 +44,11 @@ ghcr.io/tanmayjoddar/codebuddy:main-abc123def  (commit SHA)
 
 The pipeline automatically runs:
 
-| Trigger | Pipeline | Details |
-|---------|----------|---------|
-| Push to `main` | Full (test → build) | Tests, builds, and pushes Docker image |
-| Push to `develop` | Test only | Tests code, doesn't push image |
-| Pull Request | Test only | Validates code before merge |
+| Trigger           | Pipeline            | Details                                |
+| ----------------- | ------------------- | -------------------------------------- |
+| Push to `main`    | Full (test → build) | Tests, builds, and pushes Docker image |
+| Push to `develop` | Test only           | Tests code, doesn't push image         |
+| Pull Request      | Test only           | Validates code before merge            |
 
 ## 📊 Local Testing
 
@@ -71,8 +75,8 @@ npm run format:check
 
 The pipeline uses GitHub secrets:
 
-| Secret | Usage | How to Set |
-|--------|-------|-----------|
+| Secret         | Usage                                       | How to Set              |
+| -------------- | ------------------------------------------- | ----------------------- |
 | `GITHUB_TOKEN` | Authenticate with GitHub Container Registry | Auto-provided by GitHub |
 
 **No manual configuration needed!** GitHub Actions automatically authenticates using `GITHUB_TOKEN`.
@@ -80,28 +84,35 @@ The pipeline uses GitHub secrets:
 ## 📈 Viewing Results
 
 ### GitHub Actions Dashboard
+
 1. Go to your repository
 2. Click **Actions** tab
 3. View workflow runs and logs
 
 ### Container Registry
+
 Access your Docker images:
+
 ```
 https://github.com/tanmayjoddar/codebuddy/pkgs/container/codebuddy
 ```
 
 ### Coverage Reports
+
 Coverage reports uploaded to Codecov (if account linked)
 
 ## 🛠️ Configuration Files
 
 ### `.github/workflows/ci-cd.yml`
+
 Main workflow file containing all pipeline steps.
 
 ### `jest.config.js`
+
 Jest testing configuration for all tests.
 
 ### `server/__tests__/*`
+
 Test files for backend functionality.
 
 ## 📝 Writing Tests
@@ -109,10 +120,10 @@ Test files for backend functionality.
 Example test structure:
 
 ```typescript
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from "@jest/globals";
 
-describe('Feature Name', () => {
-  it('should do something', () => {
+describe("Feature Name", () => {
+  it("should do something", () => {
     expect(true).toBe(true);
   });
 });
@@ -121,6 +132,7 @@ describe('Feature Name', () => {
 ## ✅ Workflow Status
 
 Check the status badge in README:
+
 ```markdown
 ![CI/CD Pipeline](https://github.com/tanmayjoddar/codebuddy/actions/workflows/ci-cd.yml/badge.svg)
 ```
@@ -128,6 +140,7 @@ Check the status badge in README:
 ## 🐛 Debugging Pipeline Issues
 
 **View logs:**
+
 1. Go to **Actions** tab
 2. Click on failed workflow
 3. Click on failed job
@@ -135,12 +148,12 @@ Check the status badge in README:
 
 **Common Issues:**
 
-| Issue | Solution |
-|-------|----------|
-| Tests fail | Fix errors locally with `npm test` |
-| Docker build fails | Check `Dockerfile` for syntax errors |
-| Registry authentication fails | Verify `GITHUB_TOKEN` is available |
-| Database connection errors | Check PostgreSQL service in workflow |
+| Issue                         | Solution                             |
+| ----------------------------- | ------------------------------------ |
+| Tests fail                    | Fix errors locally with `npm test`   |
+| Docker build fails            | Check `Dockerfile` for syntax errors |
+| Registry authentication fails | Verify `GITHUB_TOKEN` is available   |
+| Database connection errors    | Check PostgreSQL service in workflow |
 
 ## 🎯 Best Practices
 

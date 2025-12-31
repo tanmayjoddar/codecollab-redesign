@@ -303,6 +303,7 @@ docker push your-registry/codebuddy:latest
 CodeBuddy uses GitHub Actions for continuous integration and deployment:
 
 ### Automated Workflow
+
 - **On Push to Main**: Runs tests → Builds Docker image → Pushes to GitHub Container Registry
 - **On Pull Request**: Runs tests to validate code changes
 - **On Push to Develop**: Runs tests only
@@ -341,6 +342,7 @@ npm run check
 ```
 
 ### View Pipeline Status
+
 - **GitHub Actions Tab**: https://github.com/tanmayjoddar/codebuddy/actions
 - **Container Registry**: https://github.com/tanmayjoddar/codebuddy/pkgs/container/codebuddy
 - **Documentation**: See [CI_CD_PIPELINE.md](./CI_CD_PIPELINE.md)
