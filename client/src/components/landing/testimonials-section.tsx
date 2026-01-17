@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { testimonials } from "@shared/constant";
-import { Quote, Star } from "lucide-react";
+import { Quote, MessageCircle } from "lucide-react";
 
 // Animation variants
 const containerVariants = {
@@ -52,13 +52,6 @@ function TestimonialCard({
           <Quote className="w-5 h-5 text-white" />
         </div>
 
-        {/* Stars */}
-        <div className="flex items-center gap-1 mb-4">
-          {[...Array(5)].map((_, i) => (
-            <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-          ))}
-        </div>
-
         {/* Content */}
         <p className="text-foreground/90 leading-relaxed mb-6 text-lg">
           "{testimonial.content}"
@@ -91,7 +84,7 @@ function TestimonialCard({
 
 export function TestimonialsSection() {
   return (
-    <section className="relative py-24 md:py-32 px-4 overflow-hidden">
+    <section className="relative py-20 md:py-28 px-4 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 mesh-gradient opacity-30" />
 
@@ -102,7 +95,7 @@ export function TestimonialsSection() {
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Section header */}
         <motion.div
-          className="text-center max-w-3xl mx-auto mb-16 md:mb-20"
+          className="text-center max-w-3xl mx-auto mb-12 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -112,10 +105,10 @@ export function TestimonialsSection() {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-button border-amber-500/30 mb-6"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-button border-violet-500/30 mb-6"
           >
-            <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-            <span className="text-sm font-medium text-amber-400">
+            <MessageCircle className="w-4 h-4 text-violet-400" />
+            <span className="text-sm font-medium text-violet-400">
               Loved by Developers
             </span>
           </motion.div>
@@ -126,7 +119,7 @@ export function TestimonialsSection() {
           </h2>
           <p className="text-lg text-muted-foreground">
             See what our community has to say about their experience with
-            CodeCollab.
+            CodeBuddy.
           </p>
         </motion.div>
 

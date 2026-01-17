@@ -245,7 +245,7 @@ export default function SignupPage() {
               />
             </div>
             <span className="text-2xl font-bold text-foreground">
-              CodeCollab
+              CodeBuddy
             </span>
           </motion.div>
 

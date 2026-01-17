@@ -170,7 +170,7 @@ export function ShareDialog({
                   className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-foreground"
                   onClick={() =>
                     window.open(
-                      `https://twitter.com/intent/tweet?url=${encodeURIComponent(sharingUrl)}&text=${encodeURIComponent("Join my coding session on CodeCollab!")}`,
+                      `https://twitter.com/intent/tweet?url=${encodeURIComponent(sharingUrl)}&text=${encodeURIComponent("Join my coding session on CodeBuddy!")}`,
                       "_blank"
                     )
                   }
@@ -196,7 +196,7 @@ export function ShareDialog({
                   className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-foreground"
                   onClick={() =>
                     window.open(
-                      `mailto:?subject=${encodeURIComponent("Join my CodeCollab session")}&body=${encodeURIComponent(`Join my coding session: ${sharingUrl}`)}`,
+                      `mailto:?subject=${encodeURIComponent("Join my CodeBuddy session")}&body=${encodeURIComponent(`Join my coding session: ${sharingUrl}`)}`,
                       "_blank"
                     )
                   }

@@ -108,7 +108,7 @@ export default function NotFound() {
           className="text-xs text-muted-foreground"
         >
           Error 404 • Page not found •{" "}
-          <span className="text-violet-400">CodeCollab</span>
+          <span className="text-violet-400">CodeBuddy</span>
         </motion.p>
       </motion.div>
     </div>

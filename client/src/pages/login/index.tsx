@@ -141,7 +141,7 @@ export default function LoginPage() {
                 transition={{ duration: 2, repeat: Infinity }}
               />
             </div>
-            <span className="text-2xl font-bold text-foreground">CodeCollab</span>
+            <span className="text-2xl font-bold text-foreground">CodeBuddy</span>
           </motion.div>
 
           {/* Headline */}
@@ -249,7 +249,7 @@ export default function LoginPage() {
               >
                 <h2 className="text-2xl font-bold text-foreground mb-2">Welcome back</h2>
                 <p className="text-muted-foreground text-sm">
-                  Sign in to continue to CodeCollab
+                  Sign in to continue to CodeBuddy
                 </p>
               </motion.div>
               {hasRedirectParam() && (

@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Code2, ArrowRight, Menu, X } from "lucide-react";
+import { ArrowRight, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
+import { AnimatedLogo } from "@/components/ui/animated-logo";
 import {
   HeroSection,
   FeaturesSection,
@@ -36,16 +37,7 @@ function LandingNav() {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
-              <motion.div
-                className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center"
-                whileHover={{ scale: 1.05, rotate: 5 }}
-                transition={{ type: "spring", stiffness: 400 }}
-              >
-                <Code2 className="w-5 h-5 text-white" />
-              </motion.div>
-              <span className="text-xl font-bold gradient-text">
-                CodeCollab
-              </span>
+              <AnimatedLogo size="md" />
             </Link>
 
             {/* Desktop navigation */}

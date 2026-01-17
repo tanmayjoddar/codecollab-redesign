@@ -16,10 +16,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Loader2 } from "lucide-react";
+import { Loader2, Play, Save, GitFork, Share2, Copy, Check } from "lucide-react";
 import { ExecutionResult } from "@/lib/websocket";
-import { FaPlay, FaShareNodes, FaClipboard } from "react-icons/fa6";
-import { FaSave, FaCodeBranch } from "react-icons/fa";
 
 type ActionButtonsProps = {
   sessionId: string;
@@ -40,6 +38,7 @@ export function ActionButtons({
 }: ActionButtonsProps) {
   const [isSharing, setIsSharing] = useState(false);
   const [shareableLink, setShareableLink] = useState("");
+  const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
   const saveCode = async () => {
@@ -122,85 +121,119 @@ export function ActionButtons({
 
   const copyLink = () => {
     navigator.clipboard.writeText(shareableLink);
+    setCopied(true);
     toast({
       title: "Link copied",
       description: "Shareable link has been copied to clipboard.",
     });
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex items-center gap-2">
       <TooltipProvider>
+        {/* Save Button */}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
               size="sm"
-              className="flex items-center space-x-1 text-sm text-gray-300 hover:text-foreground px-2 py-1 rounded"
+              className="h-9 px-3 gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent hover:border-white/10 rounded-lg transition-all duration-200"
               onClick={saveCode}
             >
-              <FaSave />
-              <span className="hidden sm:inline">Save</span>
+              <Save className="w-4 h-4" />
+              <span className="hidden sm:inline text-sm font-medium">Save</span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>
-            <p className="text-xs">Save code</p>
+          <TooltipContent side="bottom" className="text-xs">
+            Save code (Ctrl+S)
           </TooltipContent>
         </Tooltip>
-      </TooltipProvider>
 
-      <TooltipProvider>
+        {/* Fork Button */}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
               size="sm"
-              className="flex items-center space-x-1 text-sm text-gray-300 hover:text-foreground px-2 py-1 rounded"
+              className="h-9 px-3 gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent hover:border-white/10 rounded-lg transition-all duration-200"
               onClick={forkProject}
             >
-              <FaCodeBranch />
-              <span className="hidden sm:inline">Fork</span>
+              <GitFork className="w-4 h-4" />
+              <span className="hidden sm:inline text-sm font-medium">Fork</span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>
-            <p className="text-xs">Create a copy of this project</p>
+          <TooltipContent side="bottom" className="text-xs">
+            Create a copy of this project
+          </TooltipContent>
+        </Tooltip>
+
+        {/* Run Button - Primary Action */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="sm"
+              className="h-9 px-4 gap-2 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-medium rounded-lg shadow-lg shadow-emerald-500/25 transition-all duration-200 hover:shadow-emerald-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={runCode}
+              disabled={isRunning}
+            >
+              {isRunning ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Play className="w-4 h-4 fill-current" />
+              )}
+              <span className="text-sm">Run</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="text-xs">
+            Execute code (Ctrl+Enter)
+          </TooltipContent>
+        </Tooltip>
+
+        {/* Share Button */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-9 px-3 gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent hover:border-white/10 rounded-lg transition-all duration-200"
+              onClick={shareProject}
+            >
+              <Share2 className="w-4 h-4" />
+              <span className="hidden sm:inline text-sm font-medium">Share</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="text-xs">
+            Share this project
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
 
-      <Button
-        size="sm"
-        className="flex items-center space-x-1 text-sm bg-green-500 hover:bg-green-600 text-foreground px-2 py-1 rounded"
-        onClick={runCode}
-        disabled={isRunning}
-      >
-        {isRunning ? <Loader2 className="h-4 w-4 animate-spin" /> : <FaPlay />}
-        <span>Run</span>
-      </Button>
-
-      <Button
-        variant="secondary"
-        size="sm"
-        className="flex items-center space-x-1 text-sm text-foreground px-2 py-1 rounded"
-        onClick={shareProject}
-      >
-        <FaShareNodes />
-        <span className="hidden sm:inline">Share</span>
-      </Button>
-
+      {/* Share Dialog */}
       <Dialog open={isSharing} onOpenChange={setIsSharing}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md glass border-white/10">
           <DialogHeader>
-            <DialogTitle>Share Project</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg font-semibold">Share Project</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               Anyone with this link can access and collaborate on this project.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex items-center space-x-2">
-            <Input value={shareableLink} readOnly />
-            <Button onClick={copyLink}>
-              <FaClipboard />
-              Copy
+          <div className="flex items-center gap-2 mt-4">
+            <Input 
+              value={shareableLink} 
+              readOnly 
+              className="flex-1 h-10 bg-white/5 border-white/10 text-sm font-mono"
+            />
+            <Button 
+              onClick={copyLink}
+              className="h-10 px-4 gap-2 bg-gradient-to-r from-violet-500 to-cyan-500 hover:from-violet-600 hover:to-cyan-600 text-white font-medium"
+            >
+              {copied ? (
+                <Check className="w-4 h-4" />
+              ) : (
+                <Copy className="w-4 h-4" />
+              )}
+              {copied ? "Copied!" : "Copy"}
             </Button>
           </div>
         </DialogContent>

@@ -20,7 +20,7 @@ import {
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Command, Sparkles, ChevronDown, Menu, X } from "lucide-react";
+import { Search, Command, Sparkles, ChevronDown, Menu, X, Terminal } from "lucide-react";
 
 export function AppHeader() {
   const { user, logoutMutation } = useAuth();
@@ -70,12 +70,12 @@ export function AppHeader() {
               whileTap={{ scale: 0.95 }}
             >
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-600 flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:shadow-violet-500/40 transition-shadow">
-                <i className="ri-code-box-line text-white text-xl"></i>
+                <Terminal className="w-5 h-5 text-white" />
               </div>
               <motion.div className="absolute inset-0 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-600 blur-xl opacity-0 group-hover:opacity-50 transition-opacity" />
             </motion.div>
             <span className="text-xl font-bold text-foreground hidden sm:block">
-              Code<span className="gradient-text">Collab</span>
+              Code<span className="gradient-text">Buddy</span>
             </span>
           </Link>
 
@@ -245,10 +245,10 @@ export function AppHeader() {
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-cyan-600 flex items-center justify-center">
-                      <i className="ri-code-box-line text-white text-lg"></i>
+                      <Terminal className="w-4 h-4 text-white" />
                     </div>
                     <span className="font-bold text-foreground">
-                      CodeCollab
+                      CodeBuddy
                     </span>
                   </div>
                   <Button

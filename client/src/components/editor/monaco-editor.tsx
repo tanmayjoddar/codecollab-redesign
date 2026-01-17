@@ -106,22 +106,48 @@ export function MonacoEditor({
 
         const monacoLanguage = languageMap[language] || "javascript";
 
-        // Create the editor with error handling
-        // Create the editor with error handling
+        // Create the editor with modern styling
         const editor = monaco.editor.create(containerRef.current, {
           value,
           language: monacoLanguage,
           theme: "vs-dark",
           automaticLayout: true,
-          minimap: { enabled: true },
+          minimap: { 
+            enabled: true,
+            scale: 0.75,
+            showSlider: "mouseover",
+            renderCharacters: false,
+          },
           scrollBeyondLastLine: false,
           fontSize: 14,
-          fontFamily: "'Fira Code', monospace",
+          fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+          fontLigatures: true,
           lineNumbers: "on",
           readOnly,
           smoothScrolling: true,
+          cursorBlinking: "smooth",
+          cursorSmoothCaretAnimation: "on",
           wordWrap: "on",
-          padding: { top: 10 },
+          padding: { top: 16, bottom: 16 },
+          lineHeight: 24,
+          letterSpacing: 0.5,
+          renderLineHighlight: "all",
+          renderWhitespace: "selection",
+          bracketPairColorization: { enabled: true },
+          guides: {
+            bracketPairs: true,
+            indentation: true,
+            highlightActiveIndentation: true,
+          },
+          scrollbar: {
+            vertical: "visible",
+            horizontal: "auto",
+            verticalScrollbarSize: 10,
+            horizontalScrollbarSize: 10,
+            useShadows: false,
+          },
+          overviewRulerBorder: false,
+          hideCursorInOverviewRuler: false,
           // Disable features that might trigger worker loading
           quickSuggestions: false,
           parameterHints: { enabled: false },
@@ -246,10 +272,11 @@ export function MonacoEditor({
   }, [participants, fileId]);
 
   return (
-    <div className="h-full relative">
+    <div className="h-full relative rounded-xl overflow-hidden border border-white/5 bg-[#1e1e1e]">
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-background z-10">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1e1e1e] z-10 gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-violet-500" />
+          <span className="text-sm text-muted-foreground">Loading editor...</span>
         </div>
       )}
       <div ref={containerRef} className="h-full" />

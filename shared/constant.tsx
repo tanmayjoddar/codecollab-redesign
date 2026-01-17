@@ -43,16 +43,14 @@ export const testimonials = [
     role: "Senior Developer at TechCorp",
     avatar: "SC",
     content:
-      "CodeCollab has transformed how our team does pair programming. The real-time collaboration is incredibly smooth, and the execution environment is blazing fast.",
-    rating: 5,
+      "CodeBuddy has transformed how our team does pair programming. The real-time collaboration is incredibly smooth, and the execution environment is blazing fast.",
   },
   {
     name: "Marcus Johnson",
     role: "CS Student at MIT",
     avatar: "MJ",
     content:
-      "Perfect for study groups and hackathons! We use CodeCollab for all our group projects. The multi-language support is a game changer.",
-    rating: 5,
+      "Perfect for study groups and hackathons! We use CodeBuddy for all our group projects. The multi-language support is a game changer.",
   },
   {
     name: "Emily Rodriguez",
@@ -60,7 +58,6 @@ export const testimonials = [
     avatar: "ER",
     content:
       "The best collaborative coding platform I've used. Clean interface, powerful features, and reliable performance. Highly recommended!",
-    rating: 5,
   },
 ];
 

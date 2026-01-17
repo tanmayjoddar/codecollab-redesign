@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { footerLinks, socialLinks } from "@shared/constant";
 import { Link } from "wouter";
-import { Code2, Heart } from "lucide-react";
+import { Heart, Terminal } from "lucide-react";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -17,10 +17,10 @@ export function Footer() {
           <div className="col-span-2 md:col-span-4 lg:col-span-1 mb-6 lg:mb-0">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center">
-                <Code2 className="w-5 h-5 text-white" />
+                <Terminal className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold gradient-text">
-                CodeCollab
+                CodeBuddy
               </span>
             </Link>
             <p className="text-muted-foreground text-sm mb-6 max-w-xs">
@@ -74,7 +74,7 @@ export function Footer() {
         {/* Bottom row */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
-            <span>© {currentYear} CodeCollab. Made with</span>
+            <span>© {currentYear} CodeBuddy. Made with</span>
             <Heart className="w-4 h-4 text-rose-500 fill-rose-500 mx-1" />
             <span>for developers worldwide.</span>
           </div>
