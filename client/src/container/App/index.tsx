@@ -4,19 +4,27 @@ import { Toaster } from "@/components/ui/toaster";
 import { AppHeader } from "@/components/layout/app-header";
 import NotFound from "@/pages/notfound";
 import HomePage from "@/pages/home/index";
+import LandingPage from "@/pages/landing";
 import LoginPage from "@/pages/login";
 import SignupPage from "@/pages/signup";
 import PlaygroundPage from "@/pages/playground/index";
 import ProfilePage from "@/pages/profile";
 import SettingsPage from "@/pages/settings";
-import { AuthProvider } from "@/hooks/use-auth";
+import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { queryClient } from "@/lib/queryClient";
 import { ProtectedRoute } from "@/lib/protected-route";
 
 function AppContainer() {
   const [location] = useLocation();
+  const { user, isLoading } = useAuth();
   const isAuthRoute = location === "/login" || location === "/signup";
+  const isLandingRoute = location === "/";
+
+  // Show landing page for unauthenticated users on root
+  if (isLandingRoute && !user && !isLoading) {
+    return <LandingPage />;
+  }
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -19,11 +19,23 @@ import {
 } from "@/components/ui/dialog";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, Command, Sparkles, ChevronDown, Menu, X } from "lucide-react";
 
 export function AppHeader() {
   const { user, logoutMutation } = useAuth();
   const [location] = useLocation();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Track scroll for header blur effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const isActivePath = (path: string) => {
     return location === path;
@@ -38,146 +50,278 @@ export function AppHeader() {
   };
 
   return (
-    <header className="bg-background border-b border-border py-2 px-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <Link to="/" className="flex items-center mr-8">
-            <i className="ri-code-box-line text-primary text-2xl mr-2"></i>
-            <h1 className="text-xl font-semibold text-foreground">
-              CodeCollab
-            </h1>
+    <motion.header
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "nav-blur shadow-lg shadow-black/5"
+          : "bg-background/50 backdrop-blur-md"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-3 group">
+            <motion.div
+              className="relative"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-600 flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:shadow-violet-500/40 transition-shadow">
+                <i className="ri-code-box-line text-white text-xl"></i>
+              </div>
+              <motion.div className="absolute inset-0 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-600 blur-xl opacity-0 group-hover:opacity-50 transition-opacity" />
+            </motion.div>
+            <span className="text-xl font-bold text-foreground hidden sm:block">
+              Code<span className="gradient-text">Collab</span>
+            </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-4">
-            {/* <Link to="/">
+          {/* Center navigation - Desktop */}
+          <nav className="hidden md:flex items-center gap-1">
+            <Link to="/">
               <Button
                 variant="ghost"
-                className={`text-sm px-2 py-1 ${isActivePath("/")
-                  ? "bg-primary/10 text-primary"
-                  : "text-gray-300 hover:text-foreground"
-                  }`}
+                className={`relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  isActivePath("/")
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
               >
-                Dashboard
+                {isActivePath("/") && (
+                  <motion.div
+                    layoutId="nav-indicator"
+                    className="absolute inset-0 bg-white/10 rounded-xl border border-white/10"
+                    transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                  />
+                )}
+                <span className="relative z-10">Dashboard</span>
               </Button>
-            </Link> */}
-            {/* <Link to="/playground">
+            </Link>
+            <Link to="/playground">
               <Button
                 variant="ghost"
-                className={`text-sm px-2 py-1 ${location.startsWith("/playground")
-                  ? "bg-primary/10 text-primary"
-                  : "text-gray-300 hover:text-foreground"
-                  }`}
+                className={`relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  location.startsWith("/playground")
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
               >
-                Playground
+                {location.startsWith("/playground") && (
+                  <motion.div
+                    layoutId="nav-indicator"
+                    className="absolute inset-0 bg-white/10 rounded-xl border border-white/10"
+                    transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                  />
+                )}
+                <span className="relative z-10">Playground</span>
               </Button>
-            </Link> */}
+            </Link>
           </nav>
-        </div>
 
-        {/* User controls */}
-        <div className="flex items-center space-x-4">
-          <ThemeToggle />
+          {/* Right side controls */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Search button (placeholder for command palette) */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden sm:flex w-9 h-9 rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent hover:border-white/10 transition-all"
+            >
+              <Search className="w-4 h-4" />
+            </Button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="p-1.5 text-muted-foreground hover:text-foreground rounded-full hover:bg-accent"
-          >
-            <i className="ri-question-line text-lg"></i>
-          </Button>
+            <ThemeToggle />
 
-          <NotificationBell />
+            {/* Help button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden sm:flex w-9 h-9 rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent hover:border-white/10 transition-all"
+            >
+              <i className="ri-question-line text-lg"></i>
+            </Button>
 
-          {user && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="flex items-center p-0 hover:bg-transparent"
+            <NotificationBell />
+
+            {user && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition-all group"
+                  >
+                    <Avatar className="h-8 w-8 border-2 border-violet-500/30 group-hover:border-violet-500/50 transition-colors">
+                      <AvatarFallback className="bg-gradient-to-br from-violet-600 to-cyan-600 text-white text-sm font-medium">
+                        {getInitials(user.username)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="hidden lg:block text-sm font-medium text-foreground max-w-[100px] truncate">
+                      {user.username}
+                    </span>
+                    <ChevronDown className="hidden lg:block w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-56 glass-card border-white/10 p-2"
                 >
-                  <Avatar className="h-8 w-8 border-2 border-primary/30">
-                    <AvatarFallback className="bg-primary/20 text-primary">
-                      {getInitials(user.username)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm font-medium hidden md:inline-block text-foreground">
-                    {user.username}
-                  </span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
-                <Link to="/profile">
-                  <DropdownMenuItem>
-                    <i className="ri-user-line mr-2"></i>
-                    <span>Profile</span>
+                  <div className="px-2 py-2 mb-2 border-b border-white/10">
+                    <p className="text-sm font-medium text-foreground">
+                      {user.username}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {user.email}
+                    </p>
+                  </div>
+                  <Link to="/profile">
+                    <DropdownMenuItem className="rounded-lg cursor-pointer hover:bg-white/5 focus:bg-white/5">
+                      <i className="ri-user-line mr-2 text-muted-foreground"></i>
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link to="/settings">
+                    <DropdownMenuItem className="rounded-lg cursor-pointer hover:bg-white/5 focus:bg-white/5">
+                      <i className="ri-settings-4-line mr-2 text-muted-foreground"></i>
+                      <span>Settings</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuItem className="rounded-lg cursor-pointer hover:bg-white/5 focus:bg-white/5">
+                    <Sparkles className="w-4 h-4 mr-2 text-amber-400" />
+                    <span>Upgrade to Pro</span>
+                    <span className="ml-auto text-xs bg-gradient-to-r from-amber-500 to-orange-500 text-white px-1.5 py-0.5 rounded-full">
+                      New
+                    </span>
                   </DropdownMenuItem>
-                </Link>
-                <Link to="/settings">
-                  <DropdownMenuItem>
-                    <i className="ri-settings-4-line mr-2"></i>
-                    <span>Settings</span>
+                  <DropdownMenuSeparator className="bg-white/10" />
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="rounded-lg cursor-pointer text-red-400 hover:text-red-300 hover:bg-red-500/10 focus:bg-red-500/10"
+                  >
+                    <i className="ri-logout-box-r-line mr-2"></i>
+                    <span>Logout</span>
                   </DropdownMenuItem>
-                </Link>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                  <i className="ri-logout-box-r-line mr-2"></i>
-                  <span>Logout</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
 
-          {/* Mobile menu button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden p-1.5 text-muted-foreground hover:text-foreground rounded-full hover:bg-accent"
-            onClick={() => setShowMobileMenu(true)}
-          >
-            <i className="ri-menu-line text-lg"></i>
-          </Button>
+            {/* Mobile menu button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden w-9 h-9 rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/5"
+              onClick={() => setShowMobileMenu(true)}
+            >
+              <Menu className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Mobile Navigation Menu */}
-      <Dialog open={showMobileMenu} onOpenChange={setShowMobileMenu}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center">
-              <i className="ri-code-box-line text-primary text-xl mr-2"></i>
-              <span>CodeCollab</span>
-            </DialogTitle>
-          </DialogHeader>
-          <nav className="flex flex-col space-y-2 py-4">
-            <Link to="/" onClick={() => setShowMobileMenu(false)}>
-              <Button
-                variant={isActivePath("/") ? "default" : "ghost"}
-                className="w-full justify-start"
-              >
-                <i className="ri-dashboard-line mr-2"></i>
-                Dashboard
-              </Button>
-            </Link>
-            <Link to="/playground" onClick={() => setShowMobileMenu(false)}>
-              <Button
-                variant={
-                  location.startsWith("/playground") ? "default" : "ghost"
-                }
-                className="w-full justify-start"
-              >
-                <i className="ri-terminal-box-line mr-2"></i>
-                Playground
-              </Button>
-            </Link>
-          </nav>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowMobileMenu(false)}>
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </header>
+      <AnimatePresence>
+        {showMobileMenu && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+              onClick={() => setShowMobileMenu(false)}
+            />
+
+            {/* Slide-in menu */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed right-0 top-0 bottom-0 w-[280px] glass-card border-l border-white/10 z-50 md:hidden"
+            >
+              <div className="flex flex-col h-full p-6">
+                {/* Close button */}
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-cyan-600 flex items-center justify-center">
+                      <i className="ri-code-box-line text-white text-lg"></i>
+                    </div>
+                    <span className="font-bold text-foreground">
+                      CodeCollab
+                    </span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5"
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <X className="w-5 h-5" />
+                  </Button>
+                </div>
+
+                {/* Navigation links */}
+                <nav className="flex flex-col gap-2 flex-1">
+                  <Link to="/" onClick={() => setShowMobileMenu(false)}>
+                    <Button
+                      variant={isActivePath("/") ? "secondary" : "ghost"}
+                      className="w-full justify-start rounded-xl h-11"
+                    >
+                      <i className="ri-dashboard-line mr-3 text-lg"></i>
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Link
+                    to="/playground"
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <Button
+                      variant={
+                        location.startsWith("/playground")
+                          ? "secondary"
+                          : "ghost"
+                      }
+                      className="w-full justify-start rounded-xl h-11"
+                    >
+                      <i className="ri-terminal-box-line mr-3 text-lg"></i>
+                      Playground
+                    </Button>
+                  </Link>
+                  <Link to="/profile" onClick={() => setShowMobileMenu(false)}>
+                    <Button
+                      variant={isActivePath("/profile") ? "secondary" : "ghost"}
+                      className="w-full justify-start rounded-xl h-11"
+                    >
+                      <i className="ri-user-line mr-3 text-lg"></i>
+                      Profile
+                    </Button>
+                  </Link>
+                  <Link to="/settings" onClick={() => setShowMobileMenu(false)}>
+                    <Button
+                      variant={
+                        isActivePath("/settings") ? "secondary" : "ghost"
+                      }
+                      className="w-full justify-start rounded-xl h-11"
+                    >
+                      <i className="ri-settings-4-line mr-3 text-lg"></i>
+                      Settings
+                    </Button>
+                  </Link>
+                </nav>
+
+                {/* Upgrade button */}
+                <div className="pt-4 border-t border-white/10">
+                  <Button className="w-full h-11 btn-gradient text-white font-medium">
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Upgrade to Pro
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </motion.header>
   );
 }
