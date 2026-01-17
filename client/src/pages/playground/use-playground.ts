@@ -31,6 +31,15 @@ interface AccessError {
   message: string;
 }
 
+// Debounce function for code changes
+function debounce<T extends (...args: any[]) => void>(fn: T, delay: number): T {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  return ((...args: Parameters<T>) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(...args), delay);
+  }) as T;
+}
+
 export function usePlayground() {
   const params = useParams();
   const { user } = useAuth();
@@ -53,6 +62,11 @@ export function usePlayground() {
     EnhancedParticipant[]
   >([]);
   const [accessError, setAccessError] = useState<AccessError | null>(null);
+  
+  // Track remote vs local changes to prevent loops
+  const isRemoteChangeRef = useRef(false);
+  const lastLocalChangeRef = useRef<string>("");
+  const pendingChangesRef = useRef<Map<string, string>>(new Map());
 
   const hasJoinedSession = useRef(false);
 
@@ -173,22 +187,38 @@ export function usePlayground() {
   // WebSocket event handlers
   useEffect(() => {
     const onCodeChange = (data: any) => {
-      if (data.userId !== user?.id && data.fileId === activeFileId) {
-        const fileIndex = openFiles.findIndex(f => f.id === data.fileId);
-        if (fileIndex >= 0) {
-          const updatedFiles = [...openFiles];
-          updatedFiles[fileIndex] = {
-            ...updatedFiles[fileIndex],
-            content: data.content,
-          };
-          setOpenFiles(updatedFiles);
-        }
-      }
+      // Only process changes from other users
+      if (data.userId === user?.id) return;
+      
+      // Skip if this is our own change echoed back
+      if (lastLocalChangeRef.current === data.content) return;
+      
+      // Mark this as a remote change to prevent sending it back
+      isRemoteChangeRef.current = true;
+      
+      // Update the file content
+      setOpenFiles(prev => {
+        const newFiles = prev.map(file => 
+          file.id === data.fileId 
+            ? { ...file, content: data.content }
+            : file
+        );
+        return newFiles;
+      });
+      
+      // Reset remote change flag after a short delay
+      setTimeout(() => {
+        isRemoteChangeRef.current = false;
+      }, 50);
     };
 
     const onCursorUpdate = (data: any) => {
       if (data.userId !== user?.id) {
-        setCursorPositions(prev => new Map(prev).set(data.userId, data.cursor));
+        setCursorPositions(prev => {
+          const newMap = new Map(prev);
+          newMap.set(data.userId, data.cursor);
+          return newMap;
+        });
       }
     };
 
@@ -199,6 +229,7 @@ export function usePlayground() {
           username: p.username || `User ${p.userId}`,
           cursor: cursorPositions.get(p.userId) || p.cursor,
           color: generateUserColor(p.username || `User ${p.userId}`),
+          isActive: p.isActive ?? true, // Default to active
         }));
         setEnhancedParticipants(participants);
       }
@@ -262,17 +293,35 @@ export function usePlayground() {
     [activeFileId, openFiles]
   );
 
-  // Code change handler
+  // Code change handler - debounced to prevent flooding
+  const debouncedSendChange = useCallback(
+    debounce((fileId: string, content: string) => {
+      wsManager.sendCodeChange(fileId, content);
+    }, 100),
+    []
+  );
+
   const handleCodeChange = useCallback(
     (content: string) => {
       if (!activeFileId) return;
-      const updatedFiles = openFiles.map(file =>
-        file.id === activeFileId ? { ...file, content } : file
+      
+      // Skip if this is a remote change being applied
+      if (isRemoteChangeRef.current) return;
+      
+      // Track this as our local change
+      lastLocalChangeRef.current = content;
+      
+      // Update local state immediately for responsive feel
+      setOpenFiles(prev => 
+        prev.map(file =>
+          file.id === activeFileId ? { ...file, content } : file
+        )
       );
-      setOpenFiles(updatedFiles);
-      wsManager.sendCodeChange(activeFileId, content);
+      
+      // Send to server with debouncing
+      debouncedSendChange(activeFileId, content);
     },
-    [activeFileId, openFiles]
+    [activeFileId, debouncedSendChange]
   );
 
   // Language change handler

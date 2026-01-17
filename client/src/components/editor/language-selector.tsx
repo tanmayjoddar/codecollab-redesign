@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useQuery } from "@tanstack/react-query";
+import { ChevronDown, Check } from "lucide-react";
 
 type LanguageSelectorProps = {
   currentLanguage: string;
@@ -33,32 +34,36 @@ export function LanguageSelector({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
-          className="flex items-center space-x-2 text-sm rounded px-2 py-1 bg-transparent"
+          variant="ghost"
+          className="flex items-center gap-2 text-sm rounded-lg px-3 py-1.5 h-auto bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-200"
         >
-          <span className={`${selectedLanguage.iconColor} font-mono text-xs`}>
+          <i className={`${selectedLanguage.icon} ${selectedLanguage.iconColor} text-base`}></i>
+          <span className="font-medium text-foreground">
             {selectedLanguage.name}
           </span>
-          <i className="ri-arrow-down-s-line text-muted-foreground"></i>
+          <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-48 p-0">
-        <div className="py-1">
+      <PopoverContent className="w-52 p-1.5 glass border-white/10" align="start">
+        <div className="space-y-0.5">
           {languageOptions.map(language => (
             <button
               key={language.id}
-              className={`w-full text-left px-3 py-2 text-sm hover:bg-accent flex items-center ${
+              className={`w-full text-left px-3 py-2 text-sm rounded-lg flex items-center transition-all duration-200 ${
                 language.id === currentLanguage
-                  ? "bg-accent text-foreground"
-                  : "text-muted-foreground"
+                  ? "bg-gradient-to-r from-violet-500/15 to-purple-500/15 border border-violet-500/20 text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
               }`}
               onClick={() => {
                 onSelect(language.id);
                 setOpen(false);
               }}
             >
-              <i className={`${language.icon} ${language.iconColor} mr-2`}></i>
-              <span>{language.name}</span>
+              <i className={`${language.icon} ${language.iconColor} mr-2.5 text-base`}></i>
+              <span className="flex-1 font-medium">{language.name}</span>
+              {language.id === currentLanguage && (
+                <Check className="w-4 h-4 text-violet-400" />
+              )}
             </button>
           ))}
         </div>

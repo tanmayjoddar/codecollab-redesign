@@ -79,7 +79,7 @@ export default function PlaygroundPage() {
   }
 
   return (
-    <div className="min-h-svh flex flex-col bg-background">
+    <div className="min-h-svh flex flex-col bg-gradient-to-br from-background via-background to-violet-950/10">
       {/* Session Controls */}
       <SessionControls
         sessionId={sessionData.session.id}
@@ -95,7 +95,7 @@ export default function PlaygroundPage() {
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar (File Explorer) */}
         <div
-          className={`w-56 bg-card border-r border-border flex-shrink-0 overflow-auto ${
+          className={`w-56 bg-gradient-to-b from-card/50 to-card/30 backdrop-blur-sm border-r border-white/5 flex-shrink-0 overflow-auto ${
             showSidebar ? "block" : "hidden"
           } md:block`}
         >
@@ -109,7 +109,7 @@ export default function PlaygroundPage() {
         </div>
 
         {/* Editor Panel */}
-        <div className="flex-grow flex flex-col bg-background overflow-hidden">
+        <div className="flex-grow flex flex-col bg-background/50 backdrop-blur-sm overflow-hidden">
           {/* File tabs */}
           <FileTabs
             files={openFiles}
@@ -119,7 +119,7 @@ export default function PlaygroundPage() {
           />
 
           {/* Code editor */}
-          <div className="flex-grow relative overflow-hidden">
+          <div className="flex-grow relative overflow-hidden rounded-tl-2xl border-l border-t border-white/5 bg-[#1a1a2e]">
             {activeFile ? (
               <MonacoEditor
                 value={activeFile.content}
@@ -129,8 +129,12 @@ export default function PlaygroundPage() {
                 participants={enhancedParticipants}
               />
             ) : (
-              <div className="p-4 text-muted-foreground">
-                No file selected. Create or select a file to start coding.
+              <div className="flex flex-col items-center justify-center h-full text-center">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-violet-500/20 flex items-center justify-center mb-4">
+                  <i className="ri-file-code-line text-3xl text-violet-400"></i>
+                </div>
+                <p className="text-muted-foreground text-sm">No file selected</p>
+                <p className="text-muted-foreground/50 text-xs mt-1">Create or select a file to start coding</p>
               </div>
             )}
           </div>

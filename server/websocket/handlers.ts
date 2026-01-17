@@ -100,7 +100,7 @@ export function createMessageHandlers(
           type: "participants_update",
           participants: await storage.getSessionParticipantsWithUsers(
             sessionId,
-            true
+            false // Return all participants, let client filter by isActive
           ),
         });
       }
@@ -117,7 +117,7 @@ export function createMessageHandlers(
           type: "participants_update",
           participants: await storage.getSessionParticipantsWithUsers(
             client.sessionId,
-            true
+            false // Return all participants
           ),
         });
 
@@ -227,7 +227,7 @@ export function createMessageHandlers(
           type: "participants_update",
           participants: await storage.getSessionParticipantsWithUsers(
             client.sessionId,
-            true
+            false // Return all participants so offline users show in the list
           ),
         });
       }

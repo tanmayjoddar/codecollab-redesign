@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import * as monaco from "monaco-editor";
 import { Loader2 } from "lucide-react";
 import { wsManager, type CursorPosition } from "@/lib/websocket";
@@ -93,6 +93,14 @@ export function MonacoEditor({
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const decorationsRef = useRef<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Track if we're applying a remote change to avoid triggering onChange
+  const isApplyingRemoteChange = useRef(false);
+  // Track the last value we set to avoid duplicate updates
+  const lastSetValueRef = useRef<string>("");
+  // Track if user is actively typing
+  const isUserTypingRef = useRef(false);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Initialize Monaco editor
   useEffect(() => {
@@ -158,16 +166,30 @@ export function MonacoEditor({
         editorRef.current = editor;
         setIsLoading(false);
 
-        // Handle content changes
-        editor.onDidChangeModelContent(() => {
+        // Handle content changes - only trigger onChange for user edits
+        editor.onDidChangeModelContent((e) => {
+          // Skip if we're applying a remote change
+          if (isApplyingRemoteChange.current) return;
+          
+          // Mark user as typing
+          isUserTypingRef.current = true;
+          if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+          }
+          typingTimeoutRef.current = setTimeout(() => {
+            isUserTypingRef.current = false;
+          }, 500);
+          
           if (onChange && !readOnly) {
-            onChange(editor.getValue());
+            const newValue = editor.getValue();
+            lastSetValueRef.current = newValue;
+            onChange(newValue);
           }
         });
 
         // Handle cursor position changes
         editor.onDidChangeCursorPosition(e => {
-          if (!readOnly) {
+          if (!readOnly && !isApplyingRemoteChange.current) {
             const cursor: CursorPosition = {
               line: e.position.lineNumber,
               column: e.position.column,
@@ -192,14 +214,70 @@ export function MonacoEditor({
     };
   }, []);
 
-  // Update editor value when prop changes
+  // Update editor value when prop changes (remote changes)
   useEffect(() => {
-    if (editorRef.current) {
-      const currentValue = editorRef.current.getValue();
-      if (value !== currentValue) {
-        editorRef.current.setValue(value);
+    if (!editorRef.current) return;
+    
+    const currentValue = editorRef.current.getValue();
+    
+    // Skip if the value is the same or if it's our own change
+    if (value === currentValue || value === lastSetValueRef.current) {
+      return;
+    }
+    
+    // Don't interrupt user while they're actively typing
+    // Instead, queue the update
+    if (isUserTypingRef.current) {
+      return;
+    }
+    
+    // Mark as remote change to prevent triggering onChange
+    isApplyingRemoteChange.current = true;
+    
+    // Save cursor position before update
+    const selection = editorRef.current.getSelection();
+    const scrollTop = editorRef.current.getScrollTop();
+    
+    // Apply the remote change using executeEdits for better undo support
+    const model = editorRef.current.getModel();
+    if (model) {
+      const fullRange = model.getFullModelRange();
+      editorRef.current.executeEdits("remote-sync", [{
+        range: fullRange,
+        text: value,
+        forceMoveMarkers: true,
+      }]);
+    }
+    
+    // Restore cursor position if possible
+    if (selection) {
+      // Clamp the cursor position to valid range
+      const newModel = editorRef.current.getModel();
+      if (newModel) {
+        const lineCount = newModel.getLineCount();
+        const newLine = Math.min(selection.startLineNumber, lineCount);
+        const maxColumn = newModel.getLineMaxColumn(newLine);
+        const newColumn = Math.min(selection.startColumn, maxColumn);
+        
+        editorRef.current.setSelection({
+          startLineNumber: newLine,
+          startColumn: newColumn,
+          endLineNumber: newLine,
+          endColumn: newColumn,
+        });
       }
     }
+    
+    // Restore scroll position
+    editorRef.current.setScrollTop(scrollTop);
+    
+    // Update last set value
+    lastSetValueRef.current = value;
+    
+    // Reset flag after a short delay
+    setTimeout(() => {
+      isApplyingRemoteChange.current = false;
+    }, 10);
   }, [value]);
 
   // Update editor language when prop changes

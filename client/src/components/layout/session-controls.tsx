@@ -74,12 +74,14 @@ export function SessionControls({
   };
 
   return (
-    <div className="bg-background border-b border-border py-2 px-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
+    <div className="bg-gradient-to-r from-background via-background to-background/95 border-b border-white/5 py-3 px-4 backdrop-blur-xl">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         {/* Session Info */}
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center">
-            <i className="ri-file-code-line text-muted-foreground mr-2"></i>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-violet-500/20 flex items-center justify-center">
+              <i className="ri-code-s-slash-line text-violet-400 text-sm"></i>
+            </div>
             {isEditing ? (
               <Input
                 type="text"
@@ -88,17 +90,19 @@ export function SessionControls({
                 onBlur={handleNameChange}
                 onKeyDown={handleKeyDown}
                 autoFocus
-                className="bg-transparent border border-border hover:border-accent rounded px-2 py-1 text-sm font-medium focus:outline-none text-foreground h-auto w-auto"
+                className="bg-white/5 border border-white/10 hover:border-violet-500/30 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:border-violet-500/50 text-foreground h-auto w-auto min-w-[150px]"
               />
             ) : (
               <button
                 onClick={() => setIsEditing(true)}
-                className="bg-transparent border border-transparent hover:border-border rounded px-2 py-1 text-sm font-medium text-foreground"
+                className="bg-transparent border border-transparent hover:border-white/10 rounded-lg px-3 py-1.5 text-sm font-semibold text-foreground hover:bg-white/5 transition-all duration-200"
               >
                 {name || "Untitled Project"}
               </button>
             )}
           </div>
+
+          <div className="h-6 w-px bg-white/10" />
 
           <LanguageSelector
             currentLanguage={language}

@@ -230,13 +230,15 @@ function FileItem({
     <ContextMenu>
       <ContextMenuTrigger asChild>
         <div
-          className={`file-item group flex items-center py-1 px-2 rounded cursor-pointer hover:bg-accent text-muted-foreground hover:text-foreground ${
-            isActive ? "bg-accent text-foreground" : ""
+          className={`file-item group flex items-center py-1.5 px-2 mx-1 rounded-lg cursor-pointer transition-all duration-200 ${
+            isActive 
+              ? "bg-gradient-to-r from-violet-500/15 to-purple-500/15 border border-violet-500/20 text-foreground" 
+              : "text-muted-foreground hover:text-foreground hover:bg-white/5"
           }`}
           onClick={handleSelect}
         >
           {isFolder && (
-            <div className="mr-1">
+            <div className="mr-1 text-muted-foreground">
               {isExpanded ? (
                 <ChevronDown className="h-3 w-3" />
               ) : (
@@ -246,6 +248,9 @@ function FileItem({
           )}
           <i className={`${icon} ${color} mr-2 text-sm`}></i>
           <span className="text-sm font-mono truncate flex-1">{file.name}</span>
+          {isActive && (
+            <div className="w-1.5 h-1.5 rounded-full bg-violet-400 ml-2" />
+          )}
         </div>
       </ContextMenuTrigger>
       {isFolder ? <FolderContextMenu /> : <FileContextMenu />}
@@ -493,27 +498,36 @@ export function FileExplorer({
   };
 
   return (
-    <div className="py-2 h-full">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between px-2 py-1 mb-2 border-b border-border">
-        <span className="text-sm font-medium text-muted-foreground">Files</span>
+    <div className="h-full bg-gradient-to-b from-background to-background/95">
+      {/* Modern Toolbar */}
+      <div className="flex items-center justify-between px-3 py-3 border-b border-white/5">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/20 flex items-center justify-center">
+            <Folder className="w-3.5 h-3.5 text-cyan-400" />
+          </div>
+          <span className="text-xs font-semibold text-foreground uppercase tracking-wider">Files</span>
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-              <Plus className="size-2" />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-7 w-7 p-0 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10"
+            >
+              <Plus className="w-3.5 h-3.5 text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setIsCreatingFile(true)}>
-              <i className="ri-file-add-line mr-2 text-sm"></i>
+          <DropdownMenuContent align="end" className="glass border-white/10">
+            <DropdownMenuItem onClick={() => setIsCreatingFile(true)} className="text-sm">
+              <i className="ri-file-add-line mr-2 text-emerald-400"></i>
               New File
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setIsCreatingFolder(true)}>
-              <Folder className="mr-2 h-4 w-4" />
+            <DropdownMenuItem onClick={() => setIsCreatingFolder(true)} className="text-sm">
+              <Folder className="mr-2 h-4 w-4 text-cyan-400" />
               New Folder
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>
-              <i className="ri-upload-line mr-2 text-sm"></i>
+            <DropdownMenuItem onClick={() => fileInputRef.current?.click()} className="text-sm">
+              <i className="ri-upload-line mr-2 text-violet-400"></i>
               Upload File
             </DropdownMenuItem>
           </DropdownMenuContent>
