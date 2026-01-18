@@ -340,8 +340,30 @@ export function FileExplorer({
       );
 
       // Render children if folder is expanded
-      if (isFolder && isExpanded && item.children.length > 0) {
-        result.push(...renderTreeItems(item.children));
+      if (isFolder && isExpanded) {
+        if (item.children.length > 0) {
+          result.push(...renderTreeItems(item.children));
+        } else {
+          // Show "Add file" placeholder for empty folders
+          result.push(
+            <div
+              key={`${item.id}-empty`}
+              style={{ paddingLeft: `${(item.depth + 1) * 16}px` }}
+              className="py-1.5 px-2 mx-1"
+            >
+              <button
+                onClick={() => {
+                  setCurrentParentId(item.id);
+                  setIsCreatingFile(true);
+                }}
+                className="flex items-center gap-2 text-xs text-muted-foreground/60 hover:text-violet-400 transition-colors"
+              >
+                <i className="ri-add-line text-sm"></i>
+                <span>Add file...</span>
+              </button>
+            </div>
+          );
+        }
       }
     });
 
@@ -389,23 +411,43 @@ export function FileExplorer({
     }
 
     try {
-      await apiRequest("POST", `/api/sessions/${sessionId}/files`, {
-        name: newFileName,
-        content: "",
-        sessionId,
-        parentId: currentParentId,
-      });
+      const response = await apiRequest(
+        "POST",
+        `/api/sessions/${sessionId}/files`,
+        {
+          name: newFileName,
+          content: "",
+          sessionId,
+          parentId: currentParentId,
+        }
+      );
+
+      const newFile = await response.json();
 
       toast({
         title: "File created",
         description: `${newFileName} has been created successfully.`,
       });
 
+      // Expand parent folder if there is one so user can see the new file
+      if (currentParentId) {
+        setExpandedFolders(prev => {
+          const newSet = new Set(prev);
+          newSet.add(currentParentId);
+          return newSet;
+        });
+      }
+
       setIsCreatingFile(false);
       setNewFileName("");
       setCurrentParentId(null);
       setError(null);
       onFileUpdated();
+
+      // Auto-select the newly created file
+      if (newFile?.id) {
+        onFileSelect(newFile.id);
+      }
     } catch (error) {
       setError("Failed to create file");
       console.error("Error creating file:", error);
@@ -419,15 +461,39 @@ export function FileExplorer({
     }
 
     try {
-      await apiRequest("POST", `/api/sessions/${sessionId}/folders`, {
-        name: newFolderName,
-        parentId: currentParentId,
-      });
+      const response = await apiRequest(
+        "POST",
+        `/api/sessions/${sessionId}/folders`,
+        {
+          name: newFolderName,
+          parentId: currentParentId,
+        }
+      );
+
+      const newFolder = await response.json();
 
       toast({
         title: "Folder created",
         description: `${newFolderName} has been created successfully.`,
       });
+
+      // Auto-expand the newly created folder so user can add files to it
+      if (newFolder?.id) {
+        setExpandedFolders(prev => {
+          const newSet = new Set(prev);
+          newSet.add(newFolder.id);
+          return newSet;
+        });
+      }
+
+      // Also expand parent folder if there is one
+      if (currentParentId) {
+        setExpandedFolders(prev => {
+          const newSet = new Set(prev);
+          newSet.add(currentParentId);
+          return newSet;
+        });
+      }
 
       setIsCreatingFolder(false);
       setNewFolderName("");
