@@ -223,7 +223,9 @@ export function usePlayground() {
       const { fileId, content, userId } = data;
 
       // Debug logging
-      console.log(`[WS] code_change received - fileId: ${fileId}, userId: ${userId}, activeFileId: ${activeFileId}`);
+      console.log(
+        `[WS] code_change received - fileId: ${fileId}, userId: ${userId}, activeFileId: ${activeFileId}`
+      );
 
       // Ignore our own changes
       if (userId === user?.id) {
@@ -254,9 +256,11 @@ export function usePlayground() {
           console.log(`[WS] File ${fileId} not in openFiles, skipping update`);
           return prev;
         }
-        
-        console.log(`[WS] Updating file ${fileId} (${fileToUpdate.name}) with remote content`);
-        
+
+        console.log(
+          `[WS] Updating file ${fileId} (${fileToUpdate.name}) with remote content`
+        );
+
         return prev.map(file => {
           // STRICT check - only update the exact file
           if (file.id === fileId) {
@@ -436,7 +440,9 @@ export function usePlayground() {
       // Use the provided fileId or fall back to activeFileId
       const targetFileId = incomingFileId || activeFileId;
 
-      console.log(`[handleCodeChange] targetFileId: ${targetFileId}, incomingFileId: ${incomingFileId}, activeFileId: ${activeFileId}`);
+      console.log(
+        `[handleCodeChange] targetFileId: ${targetFileId}, incomingFileId: ${incomingFileId}, activeFileId: ${activeFileId}`
+      );
 
       if (!targetFileId) {
         console.warn("[handleCodeChange] called without fileId");
@@ -445,7 +451,9 @@ export function usePlayground() {
 
       // Skip if this file is currently processing a remote change
       if (processingRemoteRef.current.has(targetFileId)) {
-        console.log(`[handleCodeChange] Skipping - file ${targetFileId} is processing remote change`);
+        console.log(
+          `[handleCodeChange] Skipping - file ${targetFileId} is processing remote change`
+        );
         return;
       }
 
@@ -458,7 +466,9 @@ export function usePlayground() {
         return;
       }
 
-      console.log(`[handleCodeChange] Updating file: ${targetFile.name} (${targetFileId})`);
+      console.log(
+        `[handleCodeChange] Updating file: ${targetFile.name} (${targetFileId})`
+      );
 
       // Track this as our local change for this specific file
       lastLocalChangesRef.current.set(targetFileId, {
