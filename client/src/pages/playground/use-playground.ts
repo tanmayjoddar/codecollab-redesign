@@ -190,26 +190,30 @@ export function usePlayground() {
     }
   }, [sessionData, activeFileId]);
 
-  // Sync openFiles with sessionData.files to keep content in sync
+  // Sync openFiles with sessionData.files - ONLY for files not currently being edited
+  // This effect should NOT run frequently - only on initial load and when files are added/removed
   useEffect(() => {
     if (!sessionData?.files) return;
-    
+
     setOpenFiles(prev => {
-      // Update content of open files from session data while preserving local edits
-      return prev.map(openFile => {
+      // Check if any files were added or removed
+      const prevIds = new Set(prev.map(f => f.id));
+      const newIds = new Set(sessionData.files.map(f => f.id));
+
+      // Remove files that no longer exist on server
+      let updated = prev.filter(f => newIds.has(f.id));
+
+      // Don't update content from sessionData - let websocket handle real-time sync
+      // Only update file names if they changed
+      updated = updated.map(openFile => {
         const sessionFile = sessionData.files.find(f => f.id === openFile.id);
-        if (sessionFile) {
-          // Check if we have recent local changes for this file
-          const localChange = lastLocalChangesRef.current.get(openFile.id);
-          const hasRecentLocalChange = localChange && (Date.now() - localChange.timestamp < 2000);
-          
-          // If no recent local change, use session data
-          if (!hasRecentLocalChange) {
-            return { ...openFile, name: sessionFile.name, content: sessionFile.content };
-          }
+        if (sessionFile && sessionFile.name !== openFile.name) {
+          return { ...openFile, name: sessionFile.name };
         }
         return openFile;
-      }).filter(f => sessionData.files.some(sf => sf.id === f.id)); // Remove files that no longer exist
+      });
+
+      return updated;
     });
   }, [sessionData?.files]);
 
@@ -218,38 +222,50 @@ export function usePlayground() {
     const onCodeChange = (data: any) => {
       const { fileId, content, userId } = data;
 
+      // Debug logging
+      console.log(`[WS] code_change received - fileId: ${fileId}, userId: ${userId}, activeFileId: ${activeFileId}`);
+
       // Ignore our own changes
-      if (userId === user?.id) return;
+      if (userId === user?.id) {
+        console.log(`[WS] Ignoring own change`);
+        return;
+      }
 
       // Ignore if fileId is missing
       if (!fileId) {
-        console.warn("Received code_change without fileId");
+        console.warn("[WS] Received code_change without fileId");
         return;
       }
 
       // Check if this is our own change echoed back (compare per-file)
       const lastLocalChange = lastLocalChangesRef.current.get(fileId);
       if (lastLocalChange && lastLocalChange.content === content) {
-        // This is our own change echoed back, skip it
+        console.log(`[WS] Skipping echo of own change for file ${fileId}`);
         return;
       }
 
       // Mark this file as processing remote update
       processingRemoteRef.current.add(fileId);
 
-      // Update the specific file content
+      // Update ONLY the specific file content - strict fileId matching
       setOpenFiles(prev => {
-        // Only update the file with matching fileId
-        const updated = prev.map(file => {
+        const fileToUpdate = prev.find(f => f.id === fileId);
+        if (!fileToUpdate) {
+          console.log(`[WS] File ${fileId} not in openFiles, skipping update`);
+          return prev;
+        }
+        
+        console.log(`[WS] Updating file ${fileId} (${fileToUpdate.name}) with remote content`);
+        
+        return prev.map(file => {
+          // STRICT check - only update the exact file
           if (file.id === fileId) {
-            // Increment version for this file
             const currentVersion = fileVersionsRef.current.get(fileId) || 0;
             fileVersionsRef.current.set(fileId, currentVersion + 1);
             return { ...file, content };
           }
           return file;
         });
-        return updated;
       });
 
       // Also update in sessionData cache if file exists there but not in openFiles
@@ -361,9 +377,32 @@ export function usePlayground() {
   const handleFileSelect = useCallback(
     (fileId: string) => {
       setActiveFileId(fileId);
-      if (!openFiles.some(f => f.id === fileId) && sessionData) {
+
+      // Check if file is already open
+      const existingFile = openFiles.find(f => f.id === fileId);
+
+      if (!existingFile && sessionData) {
+        // File not open - add it from sessionData
         const file = sessionData.files.find(f => f.id === fileId);
-        if (file) setOpenFiles(prev => [...prev, file]);
+        if (file) {
+          setOpenFiles(prev => [...prev, { ...file }]);
+        }
+      } else if (existingFile && sessionData) {
+        // File is already open - update content from sessionData if no recent local changes
+        const lastLocalChange = lastLocalChangesRef.current.get(fileId);
+        const hasRecentLocalChange =
+          lastLocalChange && Date.now() - lastLocalChange.timestamp < 1000;
+
+        if (!hasRecentLocalChange) {
+          const sessionFile = sessionData.files.find(f => f.id === fileId);
+          if (sessionFile && sessionFile.content !== existingFile.content) {
+            setOpenFiles(prev =>
+              prev.map(f =>
+                f.id === fileId ? { ...f, content: sessionFile.content } : f
+              )
+            );
+          }
+        }
       }
     },
     [openFiles, sessionData]
@@ -397,24 +436,29 @@ export function usePlayground() {
       // Use the provided fileId or fall back to activeFileId
       const targetFileId = incomingFileId || activeFileId;
 
+      console.log(`[handleCodeChange] targetFileId: ${targetFileId}, incomingFileId: ${incomingFileId}, activeFileId: ${activeFileId}`);
+
       if (!targetFileId) {
-        console.warn("handleCodeChange called without fileId");
+        console.warn("[handleCodeChange] called without fileId");
         return;
       }
 
       // Skip if this file is currently processing a remote change
       if (processingRemoteRef.current.has(targetFileId)) {
+        console.log(`[handleCodeChange] Skipping - file ${targetFileId} is processing remote change`);
         return;
       }
 
       // Verify the file exists in openFiles before updating
-      const fileExists = openFiles.some(f => f.id === targetFileId);
-      if (!fileExists) {
+      const targetFile = openFiles.find(f => f.id === targetFileId);
+      if (!targetFile) {
         console.warn(
-          `File ${targetFileId} not found in openFiles, skipping update`
+          `[handleCodeChange] File ${targetFileId} not found in openFiles, skipping update`
         );
         return;
       }
+
+      console.log(`[handleCodeChange] Updating file: ${targetFile.name} (${targetFileId})`);
 
       // Track this as our local change for this specific file
       lastLocalChangesRef.current.set(targetFileId, {

@@ -184,6 +184,8 @@ export function MonacoEditor({
           if (onChange && !readOnly) {
             const newValue = editor.getValue();
             lastSetValueRef.current = newValue;
+            // Debug: Log what fileId we're sending with the change
+            console.log(`[Monaco] Sending change for fileId: ${fileId}`);
             // Pass fileId along with content to ensure correct file is updated
             onChange(newValue, fileId);
           }
