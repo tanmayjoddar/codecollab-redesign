@@ -93,7 +93,7 @@ export function MonacoEditor({
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const decorationsRef = useRef<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Track if we're applying a remote change to avoid triggering onChange
   const isApplyingRemoteChange = useRef(false);
   // Track the last value we set to avoid duplicate updates
@@ -120,7 +120,7 @@ export function MonacoEditor({
           language: monacoLanguage,
           theme: "vs-dark",
           automaticLayout: true,
-          minimap: { 
+          minimap: {
             enabled: true,
             scale: 0.75,
             showSlider: "mouseover",
@@ -128,7 +128,8 @@ export function MonacoEditor({
           },
           scrollBeyondLastLine: false,
           fontSize: 14,
-          fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+          fontFamily:
+            "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
           fontLigatures: true,
           lineNumbers: "on",
           readOnly,
@@ -167,10 +168,10 @@ export function MonacoEditor({
         setIsLoading(false);
 
         // Handle content changes - only trigger onChange for user edits
-        editor.onDidChangeModelContent((e) => {
+        editor.onDidChangeModelContent(e => {
           // Skip if we're applying a remote change
           if (isApplyingRemoteChange.current) return;
-          
+
           // Mark user as typing
           isUserTypingRef.current = true;
           if (typingTimeoutRef.current) {
@@ -179,7 +180,7 @@ export function MonacoEditor({
           typingTimeoutRef.current = setTimeout(() => {
             isUserTypingRef.current = false;
           }, 500);
-          
+
           if (onChange && !readOnly) {
             const newValue = editor.getValue();
             lastSetValueRef.current = newValue;
@@ -217,38 +218,40 @@ export function MonacoEditor({
   // Update editor value when prop changes (remote changes)
   useEffect(() => {
     if (!editorRef.current) return;
-    
+
     const currentValue = editorRef.current.getValue();
-    
+
     // Skip if the value is the same or if it's our own change
     if (value === currentValue || value === lastSetValueRef.current) {
       return;
     }
-    
+
     // Don't interrupt user while they're actively typing
     // Instead, queue the update
     if (isUserTypingRef.current) {
       return;
     }
-    
+
     // Mark as remote change to prevent triggering onChange
     isApplyingRemoteChange.current = true;
-    
+
     // Save cursor position before update
     const selection = editorRef.current.getSelection();
     const scrollTop = editorRef.current.getScrollTop();
-    
+
     // Apply the remote change using executeEdits for better undo support
     const model = editorRef.current.getModel();
     if (model) {
       const fullRange = model.getFullModelRange();
-      editorRef.current.executeEdits("remote-sync", [{
-        range: fullRange,
-        text: value,
-        forceMoveMarkers: true,
-      }]);
+      editorRef.current.executeEdits("remote-sync", [
+        {
+          range: fullRange,
+          text: value,
+          forceMoveMarkers: true,
+        },
+      ]);
     }
-    
+
     // Restore cursor position if possible
     if (selection) {
       // Clamp the cursor position to valid range
@@ -258,7 +261,7 @@ export function MonacoEditor({
         const newLine = Math.min(selection.startLineNumber, lineCount);
         const maxColumn = newModel.getLineMaxColumn(newLine);
         const newColumn = Math.min(selection.startColumn, maxColumn);
-        
+
         editorRef.current.setSelection({
           startLineNumber: newLine,
           startColumn: newColumn,
@@ -267,13 +270,13 @@ export function MonacoEditor({
         });
       }
     }
-    
+
     // Restore scroll position
     editorRef.current.setScrollTop(scrollTop);
-    
+
     // Update last set value
     lastSetValueRef.current = value;
-    
+
     // Reset flag after a short delay
     setTimeout(() => {
       isApplyingRemoteChange.current = false;
@@ -354,7 +357,9 @@ export function MonacoEditor({
       {isLoading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1e1e1e] z-10 gap-3">
           <Loader2 className="h-8 w-8 animate-spin text-violet-500" />
-          <span className="text-sm text-muted-foreground">Loading editor...</span>
+          <span className="text-sm text-muted-foreground">
+            Loading editor...
+          </span>
         </div>
       )}
       <div ref={containerRef} className="h-full" />

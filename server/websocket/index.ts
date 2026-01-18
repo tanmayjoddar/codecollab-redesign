@@ -80,7 +80,12 @@ export function initializeWebSocket(httpServer: Server) {
     });
 
     ws.on("close", async () => {
-      console.log("WebSocket client disconnected, userId:", client.userId, "sessionId:", client.sessionId);
+      console.log(
+        "WebSocket client disconnected, userId:",
+        client.userId,
+        "sessionId:",
+        client.sessionId
+      );
       await handlers.handleDisconnect(client);
       clients.delete(client);
     });

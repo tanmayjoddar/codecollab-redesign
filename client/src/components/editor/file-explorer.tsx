@@ -231,8 +231,8 @@ function FileItem({
       <ContextMenuTrigger asChild>
         <div
           className={`file-item group flex items-center py-1.5 px-2 mx-1 rounded-lg cursor-pointer transition-all duration-200 ${
-            isActive 
-              ? "bg-gradient-to-r from-violet-500/15 to-purple-500/15 border border-violet-500/20 text-foreground" 
+            isActive
+              ? "bg-gradient-to-r from-violet-500/15 to-purple-500/15 border border-violet-500/20 text-foreground"
               : "text-muted-foreground hover:text-foreground hover:bg-white/5"
           }`}
           onClick={handleSelect}
@@ -505,28 +505,39 @@ export function FileExplorer({
           <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/20 flex items-center justify-center">
             <Folder className="w-3.5 h-3.5 text-cyan-400" />
           </div>
-          <span className="text-xs font-semibold text-foreground uppercase tracking-wider">Files</span>
+          <span className="text-xs font-semibold text-foreground uppercase tracking-wider">
+            Files
+          </span>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="h-7 w-7 p-0 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10"
             >
               <Plus className="w-3.5 h-3.5 text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="glass border-white/10">
-            <DropdownMenuItem onClick={() => setIsCreatingFile(true)} className="text-sm">
+            <DropdownMenuItem
+              onClick={() => setIsCreatingFile(true)}
+              className="text-sm"
+            >
               <i className="ri-file-add-line mr-2 text-emerald-400"></i>
               New File
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setIsCreatingFolder(true)} className="text-sm">
+            <DropdownMenuItem
+              onClick={() => setIsCreatingFolder(true)}
+              className="text-sm"
+            >
               <Folder className="mr-2 h-4 w-4 text-cyan-400" />
               New Folder
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => fileInputRef.current?.click()} className="text-sm">
+            <DropdownMenuItem
+              onClick={() => fileInputRef.current?.click()}
+              className="text-sm"
+            >
               <i className="ri-upload-line mr-2 text-violet-400"></i>
               Upload File
             </DropdownMenuItem>

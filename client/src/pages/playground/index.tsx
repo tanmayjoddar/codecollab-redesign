@@ -133,8 +133,12 @@ export default function PlaygroundPage() {
                 <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-violet-500/20 flex items-center justify-center mb-4">
                   <i className="ri-file-code-line text-3xl text-violet-400"></i>
                 </div>
-                <p className="text-muted-foreground text-sm">No file selected</p>
-                <p className="text-muted-foreground/50 text-xs mt-1">Create or select a file to start coding</p>
+                <p className="text-muted-foreground text-sm">
+                  No file selected
+                </p>
+                <p className="text-muted-foreground/50 text-xs mt-1">
+                  Create or select a file to start coding
+                </p>
               </div>
             )}
           </div>

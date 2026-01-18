@@ -16,7 +16,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Loader2, Play, Save, GitFork, Share2, Copy, Check } from "lucide-react";
+import {
+  Loader2,
+  Play,
+  Save,
+  GitFork,
+  Share2,
+  Copy,
+  Check,
+} from "lucide-react";
 import { ExecutionResult } from "@/lib/websocket";
 
 type ActionButtonsProps = {
@@ -200,7 +208,9 @@ export function ActionButtons({
               onClick={shareProject}
             >
               <Share2 className="w-4 h-4" />
-              <span className="hidden sm:inline text-sm font-medium">Share</span>
+              <span className="hidden sm:inline text-sm font-medium">
+                Share
+              </span>
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="text-xs">
@@ -213,18 +223,20 @@ export function ActionButtons({
       <Dialog open={isSharing} onOpenChange={setIsSharing}>
         <DialogContent className="sm:max-w-md glass border-white/10">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold">Share Project</DialogTitle>
+            <DialogTitle className="text-lg font-semibold">
+              Share Project
+            </DialogTitle>
             <DialogDescription className="text-muted-foreground">
               Anyone with this link can access and collaborate on this project.
             </DialogDescription>
           </DialogHeader>
           <div className="flex items-center gap-2 mt-4">
-            <Input 
-              value={shareableLink} 
-              readOnly 
+            <Input
+              value={shareableLink}
+              readOnly
               className="flex-1 h-10 bg-white/5 border-white/10 text-sm font-mono"
             />
-            <Button 
+            <Button
               onClick={copyLink}
               className="h-10 px-4 gap-2 bg-gradient-to-r from-violet-500 to-cyan-500 hover:from-violet-600 hover:to-cyan-600 text-white font-medium"
             >

@@ -62,7 +62,7 @@ export function usePlayground() {
     EnhancedParticipant[]
   >([]);
   const [accessError, setAccessError] = useState<AccessError | null>(null);
-  
+
   // Track remote vs local changes to prevent loops
   const isRemoteChangeRef = useRef(false);
   const lastLocalChangeRef = useRef<string>("");
@@ -189,23 +189,21 @@ export function usePlayground() {
     const onCodeChange = (data: any) => {
       // Only process changes from other users
       if (data.userId === user?.id) return;
-      
+
       // Skip if this is our own change echoed back
       if (lastLocalChangeRef.current === data.content) return;
-      
+
       // Mark this as a remote change to prevent sending it back
       isRemoteChangeRef.current = true;
-      
+
       // Update the file content
       setOpenFiles(prev => {
-        const newFiles = prev.map(file => 
-          file.id === data.fileId 
-            ? { ...file, content: data.content }
-            : file
+        const newFiles = prev.map(file =>
+          file.id === data.fileId ? { ...file, content: data.content } : file
         );
         return newFiles;
       });
-      
+
       // Reset remote change flag after a short delay
       setTimeout(() => {
         isRemoteChangeRef.current = false;
@@ -304,20 +302,20 @@ export function usePlayground() {
   const handleCodeChange = useCallback(
     (content: string) => {
       if (!activeFileId) return;
-      
+
       // Skip if this is a remote change being applied
       if (isRemoteChangeRef.current) return;
-      
+
       // Track this as our local change
       lastLocalChangeRef.current = content;
-      
+
       // Update local state immediately for responsive feel
-      setOpenFiles(prev => 
+      setOpenFiles(prev =>
         prev.map(file =>
           file.id === activeFileId ? { ...file, content } : file
         )
       );
-      
+
       // Send to server with debouncing
       debouncedSendChange(activeFileId, content);
     },

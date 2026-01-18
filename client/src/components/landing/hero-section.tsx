@@ -60,7 +60,9 @@ function CodePreview() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <span className="text-muted-foreground/50 w-5 text-right mr-3">1</span>
+          <span className="text-muted-foreground/50 w-5 text-right mr-3">
+            1
+          </span>
           <span>
             <span className="text-violet-400">const</span>{" "}
             <span className="text-cyan-400">team</span> ={" "}
@@ -73,7 +75,9 @@ function CodePreview() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.75 }}
         >
-          <span className="text-muted-foreground/50 w-5 text-right mr-3">2</span>
+          <span className="text-muted-foreground/50 w-5 text-right mr-3">
+            2
+          </span>
           <span>
             <span className="text-violet-400">const</span>{" "}
             <span className="text-cyan-400">code</span> ={" "}
@@ -86,7 +90,9 @@ function CodePreview() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.9 }}
         >
-          <span className="text-muted-foreground/50 w-5 text-right mr-3">3</span>
+          <span className="text-muted-foreground/50 w-5 text-right mr-3">
+            3
+          </span>
           <span className="flex items-center gap-1">
             <span className="text-rose-400">export</span>{" "}
             <span className="text-foreground/90">{"{ team, code };"}</span>
@@ -102,9 +108,15 @@ function CodePreview() {
       {/* User avatars */}
       <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/5">
         <div className="flex -space-x-2">
-          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 border-2 border-background flex items-center justify-center text-[8px] text-white font-medium">J</div>
-          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 border-2 border-background flex items-center justify-center text-[8px] text-white font-medium">S</div>
-          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 border-2 border-background flex items-center justify-center text-[8px] text-white font-medium">M</div>
+          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 border-2 border-background flex items-center justify-center text-[8px] text-white font-medium">
+            J
+          </div>
+          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 border-2 border-background flex items-center justify-center text-[8px] text-white font-medium">
+            S
+          </div>
+          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 border-2 border-background flex items-center justify-center text-[8px] text-white font-medium">
+            M
+          </div>
         </div>
         <span className="text-[10px] text-muted-foreground">
           3 collaborators editing...
@@ -178,7 +190,8 @@ export function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              The collaborative code editor for modern teams. Write, execute, and debug code in real-time with developers worldwide.
+              The collaborative code editor for modern teams. Write, execute,
+              and debug code in real-time with developers worldwide.
             </motion.p>
 
             {/* CTA buttons */}

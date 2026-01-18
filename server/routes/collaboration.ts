@@ -21,22 +21,46 @@ export function createCollaborationRoutes() {
           return res.status(404).json({ message: "Session not found" });
         }
 
-        if (session.isPublic) {
+        // Can't request to join your own session
+        if (session.ownerId === req.user!.id) {
           return res.status(400).json({
-            message: "Cannot request collaboration for public sessions",
+            message: "You already own this session",
           });
         }
 
+        // Check if user is already a participant with access
+        const participants = await storage.getSessionParticipants(sessionId);
+        const isParticipant = participants.some(
+          p => p.userId === req.user!.id
+        );
+        
+        if (isParticipant) {
+          return res.status(400).json({
+            message: "You already have access to this session",
+          });
+        }
+
+        // Check for existing pending or accepted request
         const existingRequests = await storage.getCollaborationRequestsByUser(
           req.user!.id
         );
-        const existingRequest = existingRequests.find(
+        const existingPendingRequest = existingRequests.find(
           r => r.sessionId === sessionId && r.status === "pending"
         );
 
-        if (existingRequest) {
+        if (existingPendingRequest) {
           return res.status(409).json({
             message: "You already have a pending request for this session",
+          });
+        }
+
+        const existingAcceptedRequest = existingRequests.find(
+          r => r.sessionId === sessionId && r.status === "accepted"
+        );
+
+        if (existingAcceptedRequest) {
+          return res.status(400).json({
+            message: "Your request has already been accepted",
           });
         }
 

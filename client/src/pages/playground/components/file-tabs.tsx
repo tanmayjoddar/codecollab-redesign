@@ -35,8 +35,8 @@ export function FileTabs({
             <span className="text-xs font-mono">{file.name}</span>
             <button
               className={`ml-2 rounded-md p-0.5 transition-all ${
-                isActive 
-                  ? "text-muted-foreground hover:text-foreground hover:bg-white/10" 
+                isActive
+                  ? "text-muted-foreground hover:text-foreground hover:bg-white/10"
                   : "opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground hover:bg-white/10"
               }`}
               onClick={e => {

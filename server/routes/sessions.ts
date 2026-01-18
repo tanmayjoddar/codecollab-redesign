@@ -72,49 +72,54 @@ export function createSessionRoutes(broadcastToSession: BroadcastFunction) {
         return res.status(404).json({ message: "Session not found" });
       }
 
-      // Check if the user has access to this session
-      if (!session.isPublic) {
-        if (!req.isAuthenticated()) {
-          return res.status(401).json({
-            message: "Authentication required",
-            requiresAuth: true,
-            sessionId: session.id,
-          });
-        }
+      // All sessions require authentication to collaborate
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({
+          message: "Authentication required to access this session",
+          requiresAuth: true,
+          sessionId: session.id,
+        });
+      }
 
-        if (session.ownerId !== req.user!.id) {
-          const participants = await storage.getSessionParticipants(sessionId);
-          const isParticipant = participants.some(
-            p => p.userId === req.user!.id
-          );
+      // Owner always has access
+      if (session.ownerId === req.user!.id) {
+        const files = await storage.getFilesBySession(sessionId);
+        const participants = await storage.getSessionParticipantsWithUsers(
+          sessionId,
+          false
+        );
+        return res.status(200).json({ session, files, participants });
+      }
 
-          if (!isParticipant) {
-            const requests = await storage.getCollaborationRequestsByUser(
-              req.user!.id
-            );
-            const hasAccess = requests.some(
-              r => r.sessionId === sessionId && r.status === "accepted"
-            );
+      // Check if user is an existing participant
+      const participants = await storage.getSessionParticipants(sessionId);
+      const isParticipant = participants.some(p => p.userId === req.user!.id);
 
-            if (!hasAccess) {
-              return res.status(403).json({
-                message: "You don't have access to this session",
-                requiresRequest: true,
-                sessionId: session.id,
-                ownerId: session.ownerId,
-              });
-            }
-          }
-        }
+      // Check if user has an accepted collaboration request
+      const requests = await storage.getCollaborationRequestsByUser(
+        req.user!.id
+      );
+      const hasAccess = requests.some(
+        r => r.sessionId === sessionId && r.status === "accepted"
+      );
+
+      if (!isParticipant && !hasAccess) {
+        return res.status(403).json({
+          message:
+            "You need permission to collaborate on this session. Please send a collaboration request.",
+          requiresRequest: true,
+          sessionId: session.id,
+          ownerId: session.ownerId,
+        });
       }
 
       const files = await storage.getFilesBySession(sessionId);
-      const participants = await storage.getSessionParticipantsWithUsers(
-        sessionId,
-        false
-      );
+      const participantsWithUsers =
+        await storage.getSessionParticipantsWithUsers(sessionId, false);
 
-      return res.status(200).json({ session, files, participants });
+      return res
+        .status(200)
+        .json({ session, files, participants: participantsWithUsers });
     } catch (error) {
       console.error("Error fetching session:", error);
       return res.status(500).json({ message: "Failed to fetch session data" });

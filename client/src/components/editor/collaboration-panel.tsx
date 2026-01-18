@@ -10,20 +10,20 @@ import { wsManager, ExecutionResult } from "@/lib/websocket";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Terminal, 
-  MessageCircle, 
-  Users, 
-  UserPlus, 
-  Send, 
-  Check, 
-  X, 
+import {
+  Terminal,
+  MessageCircle,
+  Users,
+  UserPlus,
+  Send,
+  Check,
+  X,
   Sparkles,
   Zap,
   Clock,
   CheckCircle2,
   XCircle,
-  Circle
+  Circle,
 } from "lucide-react";
 
 type CollaborationPanelProps = {
@@ -239,7 +239,10 @@ export function CollaborationPanel({
       "from-indigo-500 to-violet-500",
       "from-fuchsia-500 to-pink-500",
     ];
-    const hash = Array.from(name).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hash = Array.from(name).reduce(
+      (acc, char) => acc + char.charCodeAt(0),
+      0
+    );
     return gradients[hash % gradients.length];
   };
 
@@ -281,7 +284,7 @@ export function CollaborationPanel({
               <UserPlus className="w-3.5 h-3.5 mr-1.5" />
               Requests
               {collaborationRequests.length > 0 && (
-                <motion.span 
+                <motion.span
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white text-[10px] font-bold shadow-lg shadow-rose-500/30"
@@ -306,13 +309,15 @@ export function CollaborationPanel({
                 <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
                 <div className="w-3 h-3 rounded-full bg-green-500/80" />
               </div>
-              <span className="text-[10px] text-muted-foreground ml-2">output</span>
+              <span className="text-[10px] text-muted-foreground ml-2">
+                output
+              </span>
               {executionResult && (
-                <Badge 
-                  variant="outline" 
-                  className={`ml-auto text-[10px] ${executionResult.error ? 'border-red-500/30 text-red-400' : 'border-emerald-500/30 text-emerald-400'}`}
+                <Badge
+                  variant="outline"
+                  className={`ml-auto text-[10px] ${executionResult.error ? "border-red-500/30 text-red-400" : "border-emerald-500/30 text-emerald-400"}`}
                 >
-                  {executionResult.error ? 'Error' : 'Success'}
+                  {executionResult.error ? "Error" : "Success"}
                 </Badge>
               )}
             </div>
@@ -338,7 +343,7 @@ export function CollaborationPanel({
                   ))}
 
                   {executionResult.error && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className="mt-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 whitespace-pre-wrap"
@@ -352,7 +357,7 @@ export function CollaborationPanel({
                   )}
 
                   {!executionResult.error && executionResult.output && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className="mt-3 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 whitespace-pre-wrap"
@@ -369,7 +374,7 @@ export function CollaborationPanel({
                 </motion.div>
               </AnimatePresence>
             ) : (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="flex flex-col items-center justify-center py-12 text-center"
@@ -377,8 +382,12 @@ export function CollaborationPanel({
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/20 flex items-center justify-center mb-4">
                   <Zap className="w-8 h-8 text-emerald-400" />
                 </div>
-                <p className="text-muted-foreground text-sm">Run your code to see output</p>
-                <p className="text-muted-foreground/50 text-xs mt-1">Press Ctrl+Enter or click Run</p>
+                <p className="text-muted-foreground text-sm">
+                  Run your code to see output
+                </p>
+                <p className="text-muted-foreground/50 text-xs mt-1">
+                  Press Ctrl+Enter or click Run
+                </p>
               </motion.div>
             )}
           </div>
@@ -405,7 +414,9 @@ export function CollaborationPanel({
                       className={`mb-4 flex ${isCurrentUser ? "justify-end" : "justify-start"}`}
                     >
                       {!isCurrentUser && (
-                        <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-[10px] text-white font-bold mr-2 flex-shrink-0 shadow-lg`}>
+                        <div
+                          className={`w-8 h-8 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-[10px] text-white font-bold mr-2 flex-shrink-0 shadow-lg`}
+                        >
                           {getInitials(message.username)}
                         </div>
                       )}
@@ -425,7 +436,9 @@ export function CollaborationPanel({
                         <div className="text-sm leading-relaxed">
                           {message.content}
                         </div>
-                        <div className={`text-[10px] mt-1.5 ${isCurrentUser ? 'text-white/60' : 'text-muted-foreground'}`}>
+                        <div
+                          className={`text-[10px] mt-1.5 ${isCurrentUser ? "text-white/60" : "text-muted-foreground"}`}
+                        >
                           {new Date(message.createdAt).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
@@ -437,7 +450,7 @@ export function CollaborationPanel({
                 })}
               </AnimatePresence>
             ) : (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="flex flex-col items-center justify-center h-full text-center py-12"
@@ -445,8 +458,12 @@ export function CollaborationPanel({
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-violet-500/20 flex items-center justify-center mb-4">
                   <MessageCircle className="w-8 h-8 text-violet-400" />
                 </div>
-                <p className="text-muted-foreground text-sm font-medium">No messages yet</p>
-                <p className="text-muted-foreground/50 text-xs mt-1">Start the conversation!</p>
+                <p className="text-muted-foreground text-sm font-medium">
+                  No messages yet
+                </p>
+                <p className="text-muted-foreground/50 text-xs mt-1">
+                  Start the conversation!
+                </p>
               </motion.div>
             )}
             <div ref={messagesEndRef} />
@@ -490,7 +507,7 @@ export function CollaborationPanel({
                 {participants.filter(p => p.isActive).length}
               </span>
             </div>
-            
+
             <div className="space-y-2">
               <AnimatePresence>
                 {participants
@@ -498,17 +515,19 @@ export function CollaborationPanel({
                   .map((participant, index) => {
                     const gradient = getAvatarGradient(participant.username);
                     const isYou = participant.userId === user?.id;
-                    
+
                     return (
                       <motion.div
                         key={participant.userId}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className={`flex items-center p-3 rounded-xl ${isYou ? 'bg-gradient-to-r from-violet-500/10 to-purple-500/10 border border-violet-500/20' : 'bg-white/5 border border-white/5 hover:border-white/10'} transition-all duration-200 cursor-pointer group`}
+                        className={`flex items-center p-3 rounded-xl ${isYou ? "bg-gradient-to-r from-violet-500/10 to-purple-500/10 border border-violet-500/20" : "bg-white/5 border border-white/5 hover:border-white/10"} transition-all duration-200 cursor-pointer group`}
                       >
                         <div className="relative">
-                          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-xs text-white font-bold shadow-lg`}>
+                          <div
+                            className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-xs text-white font-bold shadow-lg`}
+                          >
                             {getInitials(participant.username)}
                           </div>
                           <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-background" />
@@ -554,20 +573,22 @@ export function CollaborationPanel({
                   Offline
                 </h3>
               </div>
-              
+
               <div className="space-y-2">
                 {participants
                   .filter(p => !p.isActive)
                   .map(participant => {
                     const gradient = getAvatarGradient(participant.username);
-                    
+
                     return (
                       <div
                         key={participant.userId}
                         className="flex items-center p-3 rounded-xl bg-white/[0.02] border border-white/5 opacity-60"
                       >
                         <div className="relative">
-                          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-xs text-white font-bold opacity-50`}>
+                          <div
+                            className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-xs text-white font-bold opacity-50`}
+                          >
                             {getInitials(participant.username)}
                           </div>
                         </div>
@@ -605,8 +626,10 @@ export function CollaborationPanel({
               <div className="space-y-3">
                 <AnimatePresence>
                   {collaborationRequests.map((request, index) => {
-                    const gradient = getAvatarGradient(request.username || `User ${request.fromUserId}`);
-                    
+                    const gradient = getAvatarGradient(
+                      request.username || `User ${request.fromUserId}`
+                    );
+
                     return (
                       <motion.div
                         key={request.id}
@@ -617,8 +640,12 @@ export function CollaborationPanel({
                         className="p-4 rounded-xl bg-gradient-to-r from-amber-500/5 to-orange-500/5 border border-amber-500/20"
                       >
                         <div className="flex items-center mb-3">
-                          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-xs text-white font-bold shadow-lg`}>
-                            {getInitials(request.username || `User ${request.fromUserId}`)}
+                          <div
+                            className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-xs text-white font-bold shadow-lg`}
+                          >
+                            {getInitials(
+                              request.username || `User ${request.fromUserId}`
+                            )}
                           </div>
                           <div className="ml-3 flex-1">
                             <span className="text-sm font-medium text-foreground">
@@ -638,7 +665,9 @@ export function CollaborationPanel({
                           <Button
                             size="sm"
                             className="flex-1 h-9 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-medium shadow-lg shadow-emerald-500/25"
-                            onClick={() => handleRequestResponse(request.id, "accepted")}
+                            onClick={() =>
+                              handleRequestResponse(request.id, "accepted")
+                            }
                           >
                             <Check className="w-4 h-4 mr-1.5" />
                             Accept
@@ -647,7 +676,9 @@ export function CollaborationPanel({
                             size="sm"
                             variant="outline"
                             className="flex-1 h-9 border-white/10 hover:bg-white/5 hover:border-white/20"
-                            onClick={() => handleRequestResponse(request.id, "rejected")}
+                            onClick={() =>
+                              handleRequestResponse(request.id, "rejected")
+                            }
                           >
                             <X className="w-4 h-4 mr-1.5" />
                             Decline
@@ -659,7 +690,7 @@ export function CollaborationPanel({
                 </AnimatePresence>
               </div>
             ) : (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="flex flex-col items-center justify-center py-12 text-center"
@@ -667,8 +698,12 @@ export function CollaborationPanel({
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/20 flex items-center justify-center mb-4">
                   <UserPlus className="w-8 h-8 text-amber-400" />
                 </div>
-                <p className="text-muted-foreground text-sm">No pending requests</p>
-                <p className="text-muted-foreground/50 text-xs mt-1">Requests will appear here</p>
+                <p className="text-muted-foreground text-sm">
+                  No pending requests
+                </p>
+                <p className="text-muted-foreground/50 text-xs mt-1">
+                  Requests will appear here
+                </p>
               </motion.div>
             )}
           </TabsContent>

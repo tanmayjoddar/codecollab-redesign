@@ -19,9 +19,7 @@ export function Footer() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center">
                 <Terminal className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold gradient-text">
-                CodeBuddy
-              </span>
+              <span className="text-xl font-bold gradient-text">CodeBuddy</span>
             </Link>
             <p className="text-muted-foreground text-sm mb-6 max-w-xs">
               The modern collaborative code editor for teams who ship fast. Code

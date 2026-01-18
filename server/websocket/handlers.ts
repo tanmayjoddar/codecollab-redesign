@@ -41,42 +41,24 @@ export function createMessageHandlers(
         return;
       }
 
-      // Check access for private sessions
-      if (
-        !session.isPublic &&
-        client.userId !== "" &&
-        session.ownerId !== client.userId
-      ) {
-        const participants = await storage.getSessionParticipants(sessionId);
-        const isParticipant = participants.some(
-          p => p.userId === client.userId
+      // Check if user is authenticated
+      if (client.userId === "") {
+        client.ws.send(
+          JSON.stringify({
+            type: "access_denied",
+            message: "Authentication required to join session",
+            sessionId,
+            requiresAuth: true,
+          })
         );
-
-        if (!isParticipant) {
-          const requests = await storage.getCollaborationRequestsByUser(
-            client.userId
-          );
-          const hasAccess = requests.some(
-            r => r.sessionId === sessionId && r.status === "accepted"
-          );
-
-          if (!hasAccess) {
-            client.ws.send(
-              JSON.stringify({
-                type: "access_denied",
-                message: "You don't have access to this private session",
-                sessionId,
-              })
-            );
-            return;
-          }
-        }
+        return;
       }
 
-      // Join the session
-      client.sessionId = sessionId;
+      // Owner always has access
+      if (session.ownerId === client.userId) {
+        // Allow owner to join
+        client.sessionId = sessionId;
 
-      if (client.userId !== "") {
         const participants = await storage.getSessionParticipants(sessionId);
         const existingParticipant = participants.find(
           p => p.userId === client.userId
@@ -98,12 +80,64 @@ export function createMessageHandlers(
 
         broadcastToSession(sessionId, {
           type: "participants_update",
-          participants: await storage.getSessionParticipantsWithUsers(
+          participants: await storage.getSessionParticipantsWithUsers(sessionId),
+        });
+        return;
+      }
+
+      // For non-owners, check if they have been granted access
+      const participants = await storage.getSessionParticipants(sessionId);
+      const isParticipant = participants.some(
+        p => p.userId === client.userId
+      );
+
+      // Check if user has an accepted collaboration request
+      const requests = await storage.getCollaborationRequestsByUser(
+        client.userId
+      );
+      const hasAccess = requests.some(
+        r => r.sessionId === sessionId && r.status === "accepted"
+      );
+
+      if (!isParticipant && !hasAccess) {
+        // User needs to request access
+        client.ws.send(
+          JSON.stringify({
+            type: "access_denied",
+            message: "You need permission to collaborate on this session. Please send a collaboration request.",
             sessionId,
-            false // Return all participants, let client filter by isActive
-          ),
+            ownerId: session.ownerId,
+            requiresRequest: true,
+          })
+        );
+        return;
+      }
+
+      // Join the session
+      client.sessionId = sessionId;
+
+      const existingParticipant = participants.find(
+        p => p.userId === client.userId
+      );
+
+      if (existingParticipant) {
+        await storage.updateParticipant(existingParticipant.id, {
+          isActive: true,
+          cursor: cursor || existingParticipant.cursor,
+        });
+      } else {
+        await storage.addParticipant({
+          sessionId,
+          userId: client.userId,
+          cursor: cursor || null,
+          isActive: true,
         });
       }
+
+      broadcastToSession(sessionId, {
+        type: "participants_update",
+        participants: await storage.getSessionParticipantsWithUsers(sessionId),
+      });
     },
 
     /**
