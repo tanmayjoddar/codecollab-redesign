@@ -63,10 +63,16 @@ export function usePlayground() {
   >([]);
   const [accessError, setAccessError] = useState<AccessError | null>(null);
 
-  // Track remote vs local changes to prevent loops
+  // Track remote vs local changes to prevent loops - per file tracking
   const isRemoteChangeRef = useRef(false);
-  const lastLocalChangeRef = useRef<string>("");
+  const lastLocalChangesRef = useRef<
+    Map<string, { content: string; timestamp: number }>
+  >(new Map());
   const pendingChangesRef = useRef<Map<string, string>>(new Map());
+  // Track file content versions for conflict resolution
+  const fileVersionsRef = useRef<Map<string, number>>(new Map());
+  // Track if we're processing a remote update for each file
+  const processingRemoteRef = useRef<Set<string>>(new Set());
 
   const hasJoinedSession = useRef(false);
 
@@ -184,30 +190,92 @@ export function usePlayground() {
     }
   }, [sessionData, activeFileId]);
 
+  // Sync openFiles with sessionData.files to keep content in sync
+  useEffect(() => {
+    if (!sessionData?.files) return;
+    
+    setOpenFiles(prev => {
+      // Update content of open files from session data while preserving local edits
+      return prev.map(openFile => {
+        const sessionFile = sessionData.files.find(f => f.id === openFile.id);
+        if (sessionFile) {
+          // Check if we have recent local changes for this file
+          const localChange = lastLocalChangesRef.current.get(openFile.id);
+          const hasRecentLocalChange = localChange && (Date.now() - localChange.timestamp < 2000);
+          
+          // If no recent local change, use session data
+          if (!hasRecentLocalChange) {
+            return { ...openFile, name: sessionFile.name, content: sessionFile.content };
+          }
+        }
+        return openFile;
+      }).filter(f => sessionData.files.some(sf => sf.id === f.id)); // Remove files that no longer exist
+    });
+  }, [sessionData?.files]);
+
   // WebSocket event handlers
   useEffect(() => {
     const onCodeChange = (data: any) => {
-      // Only process changes from other users
-      if (data.userId === user?.id) return;
+      const { fileId, content, userId } = data;
 
-      // Skip if this is our own change echoed back
-      if (lastLocalChangeRef.current === data.content) return;
+      // Ignore our own changes
+      if (userId === user?.id) return;
 
-      // Mark this as a remote change to prevent sending it back
-      isRemoteChangeRef.current = true;
+      // Ignore if fileId is missing
+      if (!fileId) {
+        console.warn("Received code_change without fileId");
+        return;
+      }
 
-      // Update the file content
+      // Check if this is our own change echoed back (compare per-file)
+      const lastLocalChange = lastLocalChangesRef.current.get(fileId);
+      if (lastLocalChange && lastLocalChange.content === content) {
+        // This is our own change echoed back, skip it
+        return;
+      }
+
+      // Mark this file as processing remote update
+      processingRemoteRef.current.add(fileId);
+
+      // Update the specific file content
       setOpenFiles(prev => {
-        const newFiles = prev.map(file =>
-          file.id === data.fileId ? { ...file, content: data.content } : file
-        );
-        return newFiles;
+        // Only update the file with matching fileId
+        const updated = prev.map(file => {
+          if (file.id === fileId) {
+            // Increment version for this file
+            const currentVersion = fileVersionsRef.current.get(fileId) || 0;
+            fileVersionsRef.current.set(fileId, currentVersion + 1);
+            return { ...file, content };
+          }
+          return file;
+        });
+        return updated;
       });
 
-      // Reset remote change flag after a short delay
+      // Also update in sessionData cache if file exists there but not in openFiles
+      if (sessionData?.files) {
+        const fileInSession = sessionData.files.find(f => f.id === fileId);
+        if (fileInSession) {
+          // Update the file in the query cache
+          queryClient.setQueryData(
+            queryKeys.sessions.detail(sessionId!),
+            (old: any) => {
+              if (!old) return old;
+              return {
+                ...old,
+                files: old.files.map((f: any) =>
+                  f.id === fileId ? { ...f, content } : f
+                ),
+              };
+            }
+          );
+        }
+      }
+
+      // Clear remote processing flag after a short delay
       setTimeout(() => {
-        isRemoteChangeRef.current = false;
-      }, 50);
+        processingRemoteRef.current.delete(fileId);
+      }, 100);
     };
 
     const onCursorUpdate = (data: any) => {
@@ -233,9 +301,34 @@ export function usePlayground() {
       }
     };
 
-    const onFileCreated = () => refetch();
-    const onFileUpdated = () => refetch();
+    const onFileCreated = (data: any) => {
+      // Initialize version for new file
+      if (data.file?.id) {
+        fileVersionsRef.current.set(data.file.id, 0);
+      }
+      refetch();
+    };
+
+    const onFileUpdated = (data: any) => {
+      // Handle file metadata updates (not content changes)
+      if (data.file) {
+        setOpenFiles(prev =>
+          prev.map(f =>
+            f.id === data.file.id ? { ...f, name: data.file.name } : f
+          )
+        );
+      }
+      refetch();
+    };
+
     const onFileDeleted = (data: any) => {
+      // Clean up version tracking
+      if (data.fileId) {
+        fileVersionsRef.current.delete(data.fileId);
+        lastLocalChangesRef.current.delete(data.fileId);
+        processingRemoteRef.current.delete(data.fileId);
+      }
+
       setOpenFiles(prev => prev.filter(f => f.id !== data.fileId));
       if (activeFileId === data.fileId && openFiles.length > 1) {
         const newActiveFile = openFiles.find(f => f.id !== data.fileId);
@@ -300,26 +393,58 @@ export function usePlayground() {
   );
 
   const handleCodeChange = useCallback(
-    (content: string) => {
-      if (!activeFileId) return;
+    (content: string, incomingFileId?: string) => {
+      // Use the provided fileId or fall back to activeFileId
+      const targetFileId = incomingFileId || activeFileId;
 
-      // Skip if this is a remote change being applied
-      if (isRemoteChangeRef.current) return;
+      if (!targetFileId) {
+        console.warn("handleCodeChange called without fileId");
+        return;
+      }
 
-      // Track this as our local change
-      lastLocalChangeRef.current = content;
+      // Skip if this file is currently processing a remote change
+      if (processingRemoteRef.current.has(targetFileId)) {
+        return;
+      }
+
+      // Verify the file exists in openFiles before updating
+      const fileExists = openFiles.some(f => f.id === targetFileId);
+      if (!fileExists) {
+        console.warn(
+          `File ${targetFileId} not found in openFiles, skipping update`
+        );
+        return;
+      }
+
+      // Track this as our local change for this specific file
+      lastLocalChangesRef.current.set(targetFileId, {
+        content,
+        timestamp: Date.now(),
+      });
+
+      // Increment local version
+      const currentVersion = fileVersionsRef.current.get(targetFileId) || 0;
+      fileVersionsRef.current.set(targetFileId, currentVersion + 1);
 
       // Update local state immediately for responsive feel
       setOpenFiles(prev =>
         prev.map(file =>
-          file.id === activeFileId ? { ...file, content } : file
+          file.id === targetFileId ? { ...file, content } : file
         )
       );
 
       // Send to server with debouncing
-      debouncedSendChange(activeFileId, content);
+      debouncedSendChange(targetFileId, content);
+
+      // Clean up old local change tracking after a delay
+      setTimeout(() => {
+        const change = lastLocalChangesRef.current.get(targetFileId);
+        if (change && Date.now() - change.timestamp > 5000) {
+          lastLocalChangesRef.current.delete(targetFileId);
+        }
+      }, 5000);
     },
-    [activeFileId, debouncedSendChange]
+    [activeFileId, openFiles, debouncedSendChange]
   );
 
   // Language change handler

@@ -30,10 +30,8 @@ export function createCollaborationRoutes() {
 
         // Check if user is already a participant with access
         const participants = await storage.getSessionParticipants(sessionId);
-        const isParticipant = participants.some(
-          p => p.userId === req.user!.id
-        );
-        
+        const isParticipant = participants.some(p => p.userId === req.user!.id);
+
         if (isParticipant) {
           return res.status(400).json({
             message: "You already have access to this session",

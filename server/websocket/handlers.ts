@@ -80,16 +80,15 @@ export function createMessageHandlers(
 
         broadcastToSession(sessionId, {
           type: "participants_update",
-          participants: await storage.getSessionParticipantsWithUsers(sessionId),
+          participants:
+            await storage.getSessionParticipantsWithUsers(sessionId),
         });
         return;
       }
 
       // For non-owners, check if they have been granted access
       const participants = await storage.getSessionParticipants(sessionId);
-      const isParticipant = participants.some(
-        p => p.userId === client.userId
-      );
+      const isParticipant = participants.some(p => p.userId === client.userId);
 
       // Check if user has an accepted collaboration request
       const requests = await storage.getCollaborationRequestsByUser(
@@ -104,7 +103,8 @@ export function createMessageHandlers(
         client.ws.send(
           JSON.stringify({
             type: "access_denied",
-            message: "You need permission to collaborate on this session. Please send a collaboration request.",
+            message:
+              "You need permission to collaborate on this session. Please send a collaboration request.",
             sessionId,
             ownerId: session.ownerId,
             requiresRequest: true,
@@ -193,22 +193,40 @@ export function createMessageHandlers(
       fileId: string,
       content: string
     ) {
+      // Validate fileId is provided
+      if (!fileId) {
+        console.warn("Code change received without fileId");
+        return;
+      }
+
       if (client.sessionId) {
         const file = await storage.getFile(fileId);
-        if (file) {
-          await storage.updateFile(file.id, { content });
 
-          broadcastToSession(
-            client.sessionId,
-            {
-              type: "code_change",
-              fileId,
-              content,
-              userId: client.userId,
-            },
-            client
-          );
+        // Validate file exists and belongs to the current session
+        if (!file) {
+          console.warn(`File not found: ${fileId}`);
+          return;
         }
+
+        if (file.sessionId !== client.sessionId) {
+          console.warn(
+            `File ${fileId} does not belong to session ${client.sessionId}`
+          );
+          return;
+        }
+
+        await storage.updateFile(file.id, { content });
+
+        broadcastToSession(
+          client.sessionId,
+          {
+            type: "code_change",
+            fileId,
+            content,
+            userId: client.userId,
+          },
+          client
+        );
       }
     },
 

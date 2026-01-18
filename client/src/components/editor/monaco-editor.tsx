@@ -41,7 +41,7 @@ type MonacoEditorProps = {
   language: string;
   fileId: string;
   readOnly?: boolean;
-  onChange?: (value: string) => void;
+  onChange?: (value: string, fileId: string) => void;
   participants?: Array<{
     id: string;
     userId: string;
@@ -97,7 +97,7 @@ export function MonacoEditor({
   // Track if we're applying a remote change to avoid triggering onChange
   const isApplyingRemoteChange = useRef(false);
   // Track the last value we set to avoid duplicate updates
-  const lastSetValueRef = useRef<string>("");
+  const lastSetValueRef = useRef<string>(value);
   // Track if user is actively typing
   const isUserTypingRef = useRef(false);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -184,7 +184,8 @@ export function MonacoEditor({
           if (onChange && !readOnly) {
             const newValue = editor.getValue();
             lastSetValueRef.current = newValue;
-            onChange(newValue);
+            // Pass fileId along with content to ensure correct file is updated
+            onChange(newValue, fileId);
           }
         });
 
@@ -215,7 +216,7 @@ export function MonacoEditor({
     };
   }, []);
 
-  // Update editor value when prop changes (remote changes)
+  // Update editor value when prop changes (remote changes only - file switches are handled by key)
   useEffect(() => {
     if (!editorRef.current) return;
 
@@ -227,7 +228,6 @@ export function MonacoEditor({
     }
 
     // Don't interrupt user while they're actively typing
-    // Instead, queue the update
     if (isUserTypingRef.current) {
       return;
     }

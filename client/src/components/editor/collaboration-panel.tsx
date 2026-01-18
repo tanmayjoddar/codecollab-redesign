@@ -247,7 +247,7 @@ export function CollaborationPanel({
   };
 
   return (
-    <div className="w-80 bg-gradient-to-b from-background to-background/95 border-l border-white/5 flex-shrink-0 flex flex-col overflow-hidden backdrop-blur-xl">
+    <div className="h-full bg-gradient-to-b from-background to-background/95 border-l border-white/5 flex flex-col overflow-hidden backdrop-blur-xl">
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}

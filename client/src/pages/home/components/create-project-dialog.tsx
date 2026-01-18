@@ -185,7 +185,8 @@ export function CreateProjectDialog({
                           Public Project
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          Discoverable in public projects. Collaborators need your approval to join and edit.
+                          Discoverable in public projects. Collaborators need
+                          your approval to join and edit.
                         </p>
                       </div>
                     </div>
@@ -207,7 +208,8 @@ export function CreateProjectDialog({
                           Private Project
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          Only visible to you. Share the link and approve requests to collaborate.
+                          Only visible to you. Share the link and approve
+                          requests to collaborate.
                         </p>
                       </div>
                     </div>
