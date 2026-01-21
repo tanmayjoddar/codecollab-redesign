@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { footerLinks, socialLinks } from "@shared/constant";
 import { Link } from "wouter";
-import { Heart, Terminal } from "lucide-react";
+import { Heart } from "lucide-react";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -15,11 +15,12 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12 mb-12">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-4 lg:col-span-1 mb-6 lg:mb-0">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center">
-                <Terminal className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold gradient-text">CodeBuddy</span>
+            <Link href="/" className="flex items-center mb-4">
+              <img
+                src="/dp.png"
+                alt="CodeBuddy Logo"
+                className="h-12 w-auto object-contain"
+              />
             </Link>
             <p className="text-muted-foreground text-sm mb-6 max-w-xs">
               The modern collaborative code editor for teams who ship fast. Code
