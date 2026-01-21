@@ -250,12 +250,24 @@ export default function SignupPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">
-              Join the <span className="gradient-text">future of coding</span>
+            <h1
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-[1.2]"
+              style={{ fontFamily: "'Kaushan Script', cursive" }}
+            >
+              JOIN THE,
             </h1>
+
+            <h1
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-[1.2] mb-6 md:mb-8 text-violet-500"
+              style={{ fontFamily: "'Kaushan Script', cursive" }}
+            >
+              FUTURE OF CODING
+            </h1>
+
             <p className="text-lg text-muted-foreground max-w-lg">
-              Create your free account and start collaborating with developers
-              around the world in seconds.
+              The collaborative code editor that brings your team together.
+              Write, execute, and debug code in real-time with developers
+              worldwide.
             </p>
           </motion.div>
 

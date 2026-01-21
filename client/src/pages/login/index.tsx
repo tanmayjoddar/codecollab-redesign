@@ -179,9 +179,13 @@ export default function LoginPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">
-              Code together, <span className="gradient-text">build faster</span>
+            <h1
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-[1.2] mb-6 md:mb-8"
+              style={{ fontFamily: "'Kaushan Script', cursive" }}
+            >
+              Code Together
             </h1>
+
             <p className="text-lg text-muted-foreground max-w-lg">
               The collaborative code editor that brings your team together.
               Write, execute, and debug code in real-time with developers
