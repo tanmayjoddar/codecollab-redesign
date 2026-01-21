@@ -18,7 +18,7 @@ import {
   Send,
   Check,
   X,
-  Sparkles,
+  Flame,
   Zap,
   Clock,
   CheckCircle2,
@@ -544,7 +544,7 @@ export function CollaborationPanel({
                             )}
                           </div>
                           <p className="text-xs text-emerald-400 flex items-center gap-1 mt-0.5">
-                            <Sparkles className="w-3 h-3" />
+                            <Flame className="w-3 h-3" />
                             Active now
                           </p>
                         </div>

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Copy, Globe, Check, ArrowRight, Share2, Sparkles } from "lucide-react";
+import { Copy, Globe, Check, ArrowRight, Share2, Flame } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
@@ -69,7 +69,7 @@ export function ShareDialog({
               transition={{ type: "spring", duration: 0.5 }}
               className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 flex items-center justify-center"
             >
-              <Sparkles className="w-8 h-8 text-emerald-400" />
+              <Flame className="w-8 h-8 text-emerald-400" />
             </motion.div>
 
             <motion.div

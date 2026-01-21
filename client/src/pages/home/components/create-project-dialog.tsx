@@ -18,14 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Loader2,
-  Globe,
-  Lock,
-  Sparkles,
-  Code2,
-  ArrowRight,
-} from "lucide-react";
+import { Loader2, Globe, Lock, Flame, Code2, ArrowRight } from "lucide-react";
 import { languages } from "@shared/schema";
 import { motion, AnimatePresence } from "framer-motion";
 

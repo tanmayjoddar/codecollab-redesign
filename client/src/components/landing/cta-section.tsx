@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Zap } from "lucide-react";
+import { ArrowRight, Flame, Zap } from "lucide-react";
 import { Link } from "wouter";
 
 export function CTASection() {
@@ -103,7 +103,7 @@ export function CTASection() {
             >
               <Link href="/signup">
                 <Button className="h-14 px-8 text-base btn-gradient text-white font-semibold group">
-                  <Sparkles className="w-5 h-5 mr-2" />
+                  <Flame className="w-5 h-5 mr-2" />
                   Get Started Free
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>

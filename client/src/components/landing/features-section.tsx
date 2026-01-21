@@ -7,7 +7,7 @@ import {
   Zap,
   Monitor,
   GitBranch,
-  Sparkles,
+  Flame,
 } from "lucide-react";
 
 // Icon mapping
@@ -71,7 +71,7 @@ function FeatureCard({
           className={`relative w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.gradient || "from-violet-500 to-cyan-500"} flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-violet-500/25 transition-all duration-300`}
         >
           <div className="text-white">
-            {iconMap[feature.icon] || <Sparkles className="w-6 h-6" />}
+            {iconMap[feature.icon] || <Flame className="w-6 h-6" />}
           </div>
 
           {/* Shine effect */}
@@ -119,7 +119,7 @@ export function FeaturesSection() {
             viewport={{ once: true }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-button border-cyan-500/30 mb-6"
           >
-            <Sparkles className="w-4 h-4 text-cyan-400" />
+            <Flame className="w-4 h-4 text-cyan-400" />
             <span className="text-sm font-medium text-cyan-400">
               Powerful Features
             </span>

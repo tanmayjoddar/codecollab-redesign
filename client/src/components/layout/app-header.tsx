@@ -20,7 +20,7 @@ import {
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Command, Sparkles, ChevronDown, Menu, X } from "lucide-react";
+import { Search, Command, Flame, ChevronDown, Menu, X } from "lucide-react";
 
 export function AppHeader() {
   const { user, logoutMutation } = useAuth();
@@ -182,7 +182,7 @@ export function AppHeader() {
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuItem className="rounded-lg cursor-pointer hover:bg-white/5 focus:bg-white/5">
-                    <Sparkles className="w-4 h-4 mr-2 text-amber-400" />
+                    <Flame className="w-4 h-4 mr-2 text-amber-400" />
                     <span>Upgrade to Pro</span>
                     <span className="ml-auto text-xs bg-gradient-to-r from-amber-500 to-orange-500 text-white px-1.5 py-0.5 rounded-full">
                       New
@@ -306,7 +306,7 @@ export function AppHeader() {
                 {/* Upgrade button */}
                 <div className="pt-4 border-t border-white/10">
                   <Button className="w-full h-11 btn-gradient text-white font-medium">
-                    <Sparkles className="w-4 h-4 mr-2" />
+                    <Flame className="w-4 h-4 mr-2" />
                     Upgrade to Pro
                   </Button>
                 </div>

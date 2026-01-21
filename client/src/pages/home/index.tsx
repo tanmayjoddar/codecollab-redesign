@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import {
   Loader2,
   Plus,
-  Sparkles,
+  Flame,
   TrendingUp,
   Users,
   Code2,
@@ -102,7 +102,7 @@ function EmptyState({ onCreateClick }: { onCreateClick: () => void }) {
           >
             <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
             Create Your First Project
-            <Sparkles className="w-4 h-4 ml-2" />
+            <Flame className="w-4 h-4 ml-2" />
           </Button>
         </div>
       </div>
@@ -279,7 +279,7 @@ export default function HomePage() {
               delay={0.3}
             />
             <StatCard
-              icon={Sparkles}
+              icon={Flame}
               label="This Week"
               value="+12%"
               color="from-amber-600 to-orange-600"

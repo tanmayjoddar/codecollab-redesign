@@ -20,7 +20,7 @@ import {
   ArrowRight,
   Github,
   Mail,
-  Sparkles,
+  Flame,
   Code2,
   Users,
   Zap,
@@ -322,7 +322,7 @@ export default function LoginPage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <Sparkles className="inline-block w-4 h-4 mr-1" />
+                  <Flame className="inline-block w-4 h-4 mr-1" />
                   You'll be redirected after login
                 </motion.div>
               )}

@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import { pricingPlans } from "@shared/constant";
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles, Zap, Building2, ArrowRight } from "lucide-react";
+import { Check, Flame, Zap, Building2, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 
 // Plan icon mapping
 const planIcons: Record<string, React.ReactNode> = {
   Free: <Zap className="w-6 h-6" />,
-  Pro: <Sparkles className="w-6 h-6" />,
+  Pro: <Flame className="w-6 h-6" />,
   Enterprise: <Building2 className="w-6 h-6" />,
 };
 
@@ -194,7 +194,7 @@ export function PricingSection() {
             viewport={{ once: true }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-button border-violet-500/30 mb-6"
           >
-            <Sparkles className="w-4 h-4 text-violet-400" />
+            <Flame className="w-4 h-4 text-violet-400" />
             <span className="text-sm font-medium text-violet-400">
               Simple Pricing
             </span>

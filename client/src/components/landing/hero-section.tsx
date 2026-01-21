@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, Sparkles } from "lucide-react";
+import { ArrowRight, Play, Flame } from "lucide-react";
 import { Link } from "wouter";
 
 // Floating orb animation component
@@ -164,7 +164,6 @@ export function HeroSection() {
               transition={{ duration: 0.4 }}
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-button border-violet-500/30 mb-6"
             >
-            
               <span className="text-xs font-medium">
                 AI-powered code suggestions
               </span>

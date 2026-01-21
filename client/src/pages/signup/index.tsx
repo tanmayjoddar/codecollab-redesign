@@ -20,7 +20,7 @@ import {
   ArrowRight,
   Github,
   Mail,
-  Sparkles,
+  Flame,
   Check,
   Code2,
   Users,
@@ -302,7 +302,7 @@ export default function SignupPage() {
             transition={{ duration: 0.6, delay: 0.5 }}
           >
             <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-400" />
+              <Flame className="w-5 h-5 text-amber-400" />
               What you'll get for free
             </h3>
             <ul className="space-y-3">
@@ -378,7 +378,7 @@ export default function SignupPage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <Sparkles className="inline-block w-4 h-4 mr-1" />
+                  <Flame className="inline-block w-4 h-4 mr-1" />
                   You'll be redirected after registration
                 </motion.div>
               )}
