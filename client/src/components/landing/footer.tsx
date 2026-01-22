@@ -17,7 +17,7 @@ export function Footer() {
           <div className="col-span-2 md:col-span-4 lg:col-span-1 mb-6 lg:mb-0">
             <Link href="/" className="flex items-center mb-4">
               <img
-                src="/dp.png"
+                src="/dp1.png"
                 alt="CodeBuddy Logo"
                 className="h-12 w-auto object-contain"
               />

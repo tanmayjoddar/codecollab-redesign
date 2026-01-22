@@ -235,9 +235,9 @@ export default function SignupPage() {
             transition={{ duration: 0.5 }}
           >
             <Link href="/">
-              <img 
-                src="/dp.png" 
-                alt="CodeBuddy Logo" 
+              <img
+                src="/dp1.png"
+                alt="CodeBuddy Logo"
                 className="h-14 w-auto object-contain"
               />
             </Link>

@@ -66,7 +66,7 @@ export function AppHeader() {
           <Link to="/" className="flex items-center group">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <img
-                src="/dp.png"
+                src="/dp1.png"
                 alt="CodeBuddy Logo"
                 className="h-12 w-auto object-contain"
               />
@@ -239,7 +239,7 @@ export function AppHeader() {
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center">
                     <img
-                      src="/dp.png"
+                      src="/dp1.png"
                       alt="CodeBuddy Logo"
                       className="h-10 w-auto object-contain"
                     />

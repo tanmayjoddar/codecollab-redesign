@@ -26,7 +26,7 @@ export function AnimatedLogo({
         transition={{ type: "spring", stiffness: 300, damping: 15 }}
       >
         <img
-          src="/dp.png"
+          src="/dp1.png"
           alt="CodeBuddy Logo"
           className={`${sizes[size].icon} object-contain`}
         />
@@ -46,7 +46,7 @@ export function StaticLogo({ size = "md", className = "" }: AnimatedLogoProps) {
   return (
     <div className={`flex items-center ${className}`}>
       <img
-        src="/dp.png"
+        src="/dp1.png"
         alt="CodeBuddy Logo"
         className={`${sizes[size].icon} object-contain`}
       />
