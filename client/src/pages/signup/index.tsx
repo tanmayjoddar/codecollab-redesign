@@ -234,19 +234,13 @@ export default function SignupPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="relative">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-600 flex items-center justify-center">
-                <i className="ri-code-box-line text-white text-2xl"></i>
-              </div>
-              <motion.div
-                className="absolute inset-0 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-600 blur-xl opacity-50"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
+            <Link href="/">
+              <img 
+                src="/dp.png" 
+                alt="CodeBuddy Logo" 
+                className="h-14 w-auto object-contain"
               />
-            </div>
-            <span className="text-2xl font-bold text-foreground">
-              CodeBuddy
-            </span>
+            </Link>
           </motion.div>
 
           {/* Headline */}
